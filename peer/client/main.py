@@ -210,17 +210,17 @@ def connect_container(argv):
     finally:
         os.path.exists(rdp_file_name) and os.unlink(rdp_file_name)
 
+    ## disable cleanup registry now.
+    # reg_string = RDP_CLEANUP_CERTIFICATE_TEMPLATE.format(
+    #     containerAddress=container['connection']['host'])
 
-    reg_string = RDP_CLEANUP_CERTIFICATE_TEMPLATE.format(
-        containerAddress=container['connection']['host'])
-
-    reg_file_name = tempfile.mktemp(suffix='.reg')
-    try:
-        with open(reg_file_name, 'w') as reg_file:
-            reg_file.write(reg_string)
-        os.system('regedit /s /q ' + reg_file_name)
-    finally:
-        os.path.exists(rdp_file_name) and os.unlink(reg_file_name)
+    # reg_file_name = tempfile.mktemp(suffix='.reg')
+    # try:
+    #     with open(reg_file_name, 'w') as reg_file:
+    #         reg_file.write(reg_string)
+    #     os.system('regedit /s /q ' + reg_file_name)
+    # finally:
+    #     os.path.exists(rdp_file_name) and os.unlink(reg_file_name)
 
 def connect_container_usage():
     sys.stdout.write('''Usage: %s [...] connect [OPTIONS] <container>
