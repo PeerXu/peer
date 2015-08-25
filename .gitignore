@@ -1,0 +1,9 @@
+*.pyc
+TAGS
+cscope.*
+peer.zip
+
+dist/
+build/
+peer.egg-info/
+tmp/
