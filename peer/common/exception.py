@@ -1,0 +1,1 @@
+class PeerBaseError(Exception): pass
