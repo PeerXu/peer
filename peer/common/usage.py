@@ -20,6 +20,7 @@ Actions:
     run                 run a new container
     rm                  rm a existed container
     applications        list applications
+    build               build an application from a Peerfile
 
 ''' % sys.argv[0])
     sys.exit(1)

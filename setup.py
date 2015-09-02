@@ -3,7 +3,7 @@ from platform import platform
 from setuptools import setup
 from setuptools import find_packages
 
-if platform().startswith('Windows'):
+if not platform().startswith('Linux'):
     requires = [
     ]
 else:

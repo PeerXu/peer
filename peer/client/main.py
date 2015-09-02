@@ -7,10 +7,11 @@ import sys
 from getopt import getopt
 from getopt import GetoptError
 
-from peer.common import options
 from peer.common.usage import usage
+from peer.client.common import options
+from peer.client.commands import load_commands
 
-OPTIONS = options.CLIENT_OPTIONS
+OPTIONS = options.OPTIONS
 
 ## about RDP FILE SETTINGS: http://www.donkz.nl/files/rdpsettings.html
 RDP_CONNECTION_TEMPLATE = '''
@@ -527,12 +528,17 @@ def main(argv):
 
     action = args[0]
 
-    {'applications': ps_applications,
-     'connect': connect_container,
-     'commit': commit_container,
-     'start': start_container,
-     'stop': stop_container,
-     'run': run_container,
-     'rm': rm_container,
-     'ps': ps_containers,
-    }.get(action, lambda *args, **kwargs: usage())(args[1:])
+    COMMANDS = {
+        'applications': ps_applications,
+        'connect': connect_container,
+        'commit': commit_container,
+        'start': start_container,
+        'stop': stop_container,
+        'run': run_container,
+        'rm': rm_container,
+        'ps': ps_containers,
+    }
+
+    COMMANDS.update(load_commands())
+
+    COMMANDS.get(action, lambda *args, **kwargs: usage())(args[1:])

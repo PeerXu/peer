@@ -2,9 +2,9 @@ import sys
 from getopt import getopt
 from getopt import GetoptError
 
-from peer.common import options
+from peer.server.common import options
 
-OPTIONS = options.SERVER_OPTIONS
+OPTIONS = options.OPTIONS
 
 def make_app():
     from eve import Eve
@@ -47,9 +47,9 @@ def get_app():
     except RuntimeError as ex:
         return make_app()
 
-def start_server(host='0.0.0.0', port=11214):
+def start_server(host, port):
     app = get_app()
-    app.run(host='0.0.0.0', port=11214, debug=True)
+    app.run(host=host, port=port, debug=True)
 
 def main(argv):
     from gevent import monkey

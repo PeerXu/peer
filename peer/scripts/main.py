@@ -2,10 +2,14 @@ import sys
 from getopt import getopt
 from getopt import GetoptError
 
-from peer.common import options
+from peer.server.common import options as server_options
+from peer.client.common import options as client_options
 from peer.common.usage import usage
 from peer.server.main import main as server_main
 from peer.client.main import main as client_main
+
+SERVER_OPTIONS = server_options.OPTIONS
+CLIENT_OPTIONS = client_options.OPTIONS
 
 def main():
     argv = sys.argv
@@ -22,13 +26,13 @@ def main():
             usage()
         elif k in ('-D', '--debug'):
             mode = 'server'
-            options.SERVER_OPTIONS['daemon'] = False
+            SERVER_OPTIONS['daemon'] = False
         elif k in ('-H', '--host'):
-            {'server': options.SERVER_OPTIONS,
-             'client': options.CLIENT_OPTIONS}.get(mode, {})['host'] = v
+            {'server': SERVER_OPTIONS,
+             'client': CLIENT_OPTIONS}.get(mode, {})['host'] = v
         elif k in ('-P', '--port'):
-            {'server': options.SERVER_OPTIONS,
-             'client': options.CLIENT_OPTIONS}.get(mode, {})['port'] = int(v)
+            {'server': SERVER_OPTIONS,
+             'client': CLIENT_OPTIONS}.get(mode, {})['port'] = int(v)
 
     {'server': server_main,
      'client': client_main}[mode](argv[1:])
