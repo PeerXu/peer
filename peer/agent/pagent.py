@@ -1,64 +1,101 @@
-def get_local_address(options):
-    import socket
-    return socket.gethostbyname(socket.gethostname())
+import base64
+import json
+from functools import wraps
+import socket
+from subprocess import Popen, PIPE
+import os
 
-def terminal(options):
-    import os
-    return os.popen(options).read()
+base64_encode = lambda s: base64.encodestring(s).replace("\n", "")
+base64_decode = lambda s: base64.decodestring(s)
 
-def get_rdp_info(options):
-    import os
-    dat = os.popen('powershell.exe Get-WmiObject -namespace root/cimv2/terminalservices -class "Win32_TSGeneralSetting"').read()
-    lines = []
-    cache_line = ''
-    for line in dat.split('\n'):
-        if line.startswith(' ' * 10):
-            cache_line += line.strip()
-        else:
-            lines.append(cache_line)
-            cache_line = line
+class Response(object):
 
-    o = {}
-    for line in lines:
-        if line == '':
-            if o and 'RDP' in o.get('__RELPATH', ''):
-                return '%s, %s' % (o['__SERVER'], o['SSLCertificateSHA1Hash'])
-            o = {}
-        else:
-            try:
-                k, v = line.split(':', 1)
-                o[k.strip()] = v.strip()
-            except:
-                pass
+    @classmethod
+    def new(cls, *args, **kwargs): raise NotImplementedError
+    def dumps(self): raise NotImplementedError
 
-    return ','
+class StringResponse(Response):
+    @classmethod
+    def new(cls, text):
+        self = cls()
+        self.text = text
+        return self
 
-def main(options):
-    import base64
-    import json
-    try:
-        glos = globals()
-        if "," in options:
-            action, options = options.split(",", 1)
-            if options.startswith("#") and "," in options:
-                fmt, enc = options.split(",", 1)
+    def dumps(self):
+        return "#base64:str," + base64_encode(self.text)
+
+class Agent(object):
+    def __init__(self):
+        self._functions = {}
+
+    def parse_opts(self, optStr):
+        class Option(object):
+            def __init__(self, func, args):
+                self.function = func.replace("-", "_")
+                self.arguments = args
+
+        if "," in optStr:
+            function, arguments = optStr.split(",", 1)
+            if arguments.startswith("#") and "," in arguments:
+                fmt, enc = arguments.split(",", 1)
                 fmt = fmt[1:]
-                fmt, typ = fmt.split(':', 1) if (':' in fmt) else (fmt, 'str')
-                dec_func = {'base64': base64.decodestring}.get(fmt)
-                typ_func = {'str': str,
-                            'unicode': unicode,
-                            'json': json.loads}.get(typ)
+                fmt, typ = fmt.split(":", 1) if (":" in fmt) else (fmt, "str")
+                dec_func = {"base64": base64.decodestring}.get(fmt)
+                typ_func = {"str": str,
+                            "unicode": unicode,
+                            "int": int,
+                            "float": float,
+                            "json": json.loads}.get(typ)
                 if not dec_func:
                     raise Exception("unsupport encoding format: %s" % fmt)
                 if not typ_func:
-                    raise Exception("unsupport tpye: %s" % typ)
-                options = typ_func(dec_func(enc))
+                    raise Exception("unsupport type: %s" % typ)
+                arguments = typ_func(dec_func(enc))
         else:
-            action, options = options, ""
-        fn = action.replace("-", "_")
-        if fn in glos:
-            return glos[fn](options)
-        else:
-            return "action: %s not found" % action
-    except Exception as ex:
-        return "unexpect exception: %s" % str(ex)
+            function, arguments = optStr, ""
+
+        return Option(function, arguments)
+
+    def register(self, response_class=None):
+        if response_class is None:
+            response_class = StringResponse
+        def wrapper(f):
+            @wraps(f)
+            def wrapped(*args, **kwargs):
+                resp = f(*args, **kwargs)
+                if not isinstance(resp, Response):
+                    resp = response_class.new(resp)
+                return resp.dumps()
+            self._functions[f.__name__] = wrapped
+            return wrapped
+        return wrapper
+
+    def _call(self, opts):
+        if opts.function not in self._functions:
+            raise Exception("unsupport function: %s" % opts.function)
+        return self._functions[opts.function](opts.arguments)
+
+    def call(self, optStr):
+
+        opts = self.parse_opts(optStr)
+        try:
+            return self._call(opts)
+        except Exception as ex:
+            return "#base64:json," + base64_encode(json.dumps({"_error": str(ex)}))
+
+    def simple_call(self, function, arguments=None):
+        optStr = function
+        if arguments:
+            optStr += ',#base64:json,' + base64_encode(json.dumps(arguments))
+        return base64_decode(self.call(optStr).split(',', 1)[1])
+
+agent = Agent()
+
+@agent.register()
+def get_local_address(arguments=None):
+    return socket.gethostbyname(socket.gethostname())
+
+main = agent.call
+
+if __name__ == '__main__':
+    print main(__import__('sys').argv[1])

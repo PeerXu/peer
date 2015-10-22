@@ -391,6 +391,8 @@ def rm_container(argv):
 
     container_id = argv[0]
 
+    conn = get_http_connection()
+
     conn.request('POST', '/v1/action/rm',
                  body={'container': {'_id': container_id}})
 

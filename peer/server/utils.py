@@ -14,6 +14,10 @@ class PeerResponse(Response):
             setattr(self, '_json', json.loads(self.data))
         return self._json
 
+    @property
+    def statusCode(self):
+        return self.status_code
+
 class PeerClient(FlaskClient):
     def open(*args, **kwargs):
         is_json = False

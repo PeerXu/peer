@@ -1,7 +1,3 @@
-import sys
-from getopt import getopt
-from getopt import GetoptError
-
 from peer.server.common import options
 
 OPTIONS = options.OPTIONS

@@ -6,6 +6,7 @@ from libvirt import libvirtError
 
 from peer.server.main import get_app
 from peer.server.utils import open_libvirt_connection
+from peer.server.common.agent import PeerAgent
 from peer.server.config import get_config
 
 CONFIG = get_config()
@@ -135,7 +136,7 @@ def on_deleted_item_containers(container):
 
     conn = open_libvirt_connection()
 
-    dom = conn.lookupByName(str(container['_id']))
+    dom = conn.lookupByName(container['_id'])
     dom.undefine()
 
     conn.close()
@@ -169,28 +170,12 @@ def _booting_container_callback(container_id):
 
 
 def _starting_container_callback(container_id):
-    conn  = open_libvirt_connection()
+    addr = PeerAgent.builder(container_id=container_id).get_local_address()
+    assert addr
 
-    dom = conn.lookupByName(container_id)
-    while True:
-        try:
-            res = libvirt_qemu.qemuAgentCommand(dom, '{"execute":"guest-peer-agent-execute", "arguments":{"options": "get-local-address"}}', 1, 0)
-            res = json.loads(res)
-            addr = res['return']
-            if addr == '127.0.0.1' or addr.startswith('169'):
-                raise
-            break
-        except Exception as ex:
-            gevent.sleep(10)
-
-    try:
-        res = libvirt_qemu.qemuAgentCommand(dom, '{"execute":"guest-peer-agent-execute", "arguments": {"options": "get-rdp-info"}}', 5, 0)
-        res = json.loads(res)
-        rdp_info = res['return']
-        server, sha1hash = map(lambda x: x.strip(), rdp_info.split(',', 1))
-        metadata = {'server': server, 'sha1hash': sha1hash}
-    except Exception as ex:
-        metadata = {'server': '', 'sha1hash': ''}
+    metadata = PeerAgent.builder(container_address=addr,
+                                 container_username='cloud',
+                                 container_password='asd').get_rdp_info()
 
     cli = get_app().get_client()
     res = cli.get('/v1/containers/%s' % container_id)
