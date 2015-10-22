@@ -5,7 +5,7 @@ CONFIG = get_config()
 
 def on_inserted_applications(items):
     for application in items:
-        base = ' -b %s.qcow2 ' % application['parent'] if application['parent'] else ''
+        base = ' -b %s.qcow2 ' % application['from'] if application['from'] else ''
         img = os.path.join(CONFIG['APPLICATION_IMAGE_HOME'], '%s.qcow2' % application['_id'])
         cmd = 'qemu-img create -f qcow2 %s %s 500G' % (base, img)
         os.system(cmd)

@@ -29,7 +29,7 @@ SCHEMA = {
                 'type': 'integer',
                 'default': 512
             },
-            'parent': {
+            'from': {
                 'type': 'sha1',
                 'data_relation': {
                     'resource': 'applications',

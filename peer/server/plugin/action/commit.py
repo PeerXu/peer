@@ -57,12 +57,12 @@ def commit_container():
     res = cli.get('/v1/containers/%s?embedded={"application":1}' % container_id)
     _etag = res.json['_etag']
 
-    req.args['application']['parent'] = res.json['application']['_id']
+    req.args['application']['from'] = res.json['application']['_id']
     res = cli.post('/v1/applications',
                    data={'name': req.args['application']['name'],
                          'program': req.args['application']['program'],
                          'cmdline': req.args['application']['cmdline'],
-                         'parent': req.args['application']['parent']})
+                         'from': req.args['application']['from']})
 
     application_id = res.json['_id']
     cli.patch('/v1/containers/%s' % container_id,

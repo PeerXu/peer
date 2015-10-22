@@ -19,14 +19,12 @@ class PeerAgent(object):
 
     @classmethod
     def builder(cls, container_id=None, container_address=None,
-                container_username=None, container_password=None,
-                container_xmlrpc_port=None):
+                container_username=None, container_password=None):
         self = cls()
         self.container_id = container_id
         self.container_address = container_address
         self.container_username = container_username
         self.container_password = container_password
-        self.container_xmlrpc_port = container_xmlrpc_port
         return self
 
     @DRIVERS.QemuGuestAgentDriver

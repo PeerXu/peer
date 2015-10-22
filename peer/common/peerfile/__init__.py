@@ -16,8 +16,8 @@ def parse_cmdline(build, argv):
     build['cmdline'] = argv
     return build
 
-def parse_parent(build, argv):
-    build['parent'] = argv
+def parse_from(build, argv):
+    build['from'] = argv
     return build
 
 def parse_min_core(build, argv):
@@ -28,8 +28,12 @@ def parse_min_mem(build, argv):
     build['min_mem'] = int(argv)
     return build
 
-def parse_run(build, argv):
-    build['run'].append(argv)
+def parse_cmd(build, argv):
+    build['run'].append(['cmd', argv])
+    return build
+
+def parse_ps(build, argv):
+    build['run'].append(['ps', argv])
     return build
 
 def parse(path):
@@ -64,6 +68,7 @@ def parse(path):
                 raise PeerfileUnknownCommand('', n)
 
             _cmd, argv = line.split(' ', 1)
+            argv = argv.lstrip()
             cmd = cmd.lower().replace('-', '_')
 
             fn = 'parse_%s' % cmd
@@ -80,6 +85,6 @@ def parse(path):
             raise PeerfileMissingCommand(command)
 
     require_command = partial(_require_command, build)
-    map(require_command, ['name', 'program', 'parent'])
+    map(require_command, ['name', 'program', 'from'])
 
     return build

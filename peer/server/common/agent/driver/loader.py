@@ -1,6 +1,17 @@
-_DRIVER = None
+from functools import wraps
 
+_DRIVER = None
 class Driver(object): pass
+
+def _driver_wrapper_helper(driver):
+    def wrapper(f):
+        @wraps(f)
+        def wrapped(_self, *args, **kwargs):
+            drv = driver()
+            drv.initialize(_self)
+            return f(_self, *args, **kwargs)
+        return wrapped
+    return wrapper
 
 def load_agent_drivers():
     global _DRIVER
@@ -20,7 +31,7 @@ def load_agent_drivers():
             try:
                 m = import_module('peer.server.common.agent.driver.%s' % module)
                 if hasattr(m, 'DRIVER'):
-                    setattr(_DRIVER, m.DRIVER.NAME, m.DRIVER())
+                    setattr(_DRIVER, m.DRIVER.NAME, _driver_wrapper_helper(m.DRIVER))
             except Exception as ex:
                 pass
 

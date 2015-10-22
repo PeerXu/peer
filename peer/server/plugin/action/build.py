@@ -17,7 +17,7 @@ def parse_request():
             'name': body['application']['name'],
             'program': body['application']['program'],
             'cmdline': body['application']['cmdline'],
-            'parent': body['application']['parent'],
+            'from': body['application']['from'],
             'min_core': body['application'].get('min_core', 1),
             'min_mem': body['application'].get('min_mem', 512),
         },
@@ -27,9 +27,10 @@ def parse_request():
         }
     }
 
-def build_application_callback(container_id, application, steps=None):
-    if steps is None:
-        steps = []
+def build_application_callback(request):
+# def build_application_callback(container_id, application, steps=None):
+    container_id = request['container']['id']
+    steps = request['container'].get('steps', [])
 
     cli = get_app().get_client()
 
@@ -39,24 +40,7 @@ def build_application_callback(container_id, application, steps=None):
             break
         gevent.sleep(1)
 
-    conn = open_libvirt_connection()
-    dom = conn.lookupByName(container_id)
-    for step in steps:
-        try:
-            res = libvirt_qemu.qemuAgentCommand(dom, '{"execute": "guest-peer-agent-execute", "arguments": {"options": "terminal,#base64,%s"}}' % base64.encodestring(step), 30, 0)
-            sys.stdout.write('''execute: %s
-->
-%s
-''' % (step, res.json['return']))
-            sys.stdout.flush()
-        except Exception as ex:
-            sys.stderr.write('Build application failed!\n')
-            return
-
-    dom.shutdown()
-
-    dom.close()
-    conn.close()
+    # TODO(Peer): execute steps.
 
     res = cli.post('/v1/action/stop', data={'container': {'_id': container_id}})
 
@@ -69,16 +53,11 @@ def build_application_callback(container_id, application, steps=None):
 
 def build_application():
     req = parse_request()
-
     cli = get_app().get_client()
-
-    res = cli.post('/v1/cation/run',
-                   data={
-                       'application': {'_id': req['application']['parent']},
-                       'container': {'autoremove': req['container']['autoremove']}
-                   })
-
+    res = cli.post('/v1/cation/run', data={'application': {'_id': req['application']['from']}})
     container_id = res.json['_id']
+    req['container']['id'] = container_id
+    gevent.spawn(build_application_callback, req)
     return cli.get('/v1/containers/%s' % container_id)
 
 ACTION = build_application
