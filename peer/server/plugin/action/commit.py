@@ -4,6 +4,7 @@ from subprocess import Popen
 from subprocess import PIPE
 from flask import request
 from flask import json
+from flask import current_app
 
 from peer.server.config import get_config
 from peer.server.main import get_app

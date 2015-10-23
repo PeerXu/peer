@@ -5,6 +5,7 @@ from flask import request
 
 from peer.server.main import get_app
 from peer.server.utils import open_libvirt_connection
+from peer.server.common.agent import PeerAgent
 
 URI = 'build'
 NAME = 'action|application|build'
@@ -28,11 +29,13 @@ def parse_request():
     }
 
 def build_application_callback(request):
-# def build_application_callback(container_id, application, steps=None):
-    container_id = request['container']['id']
-    steps = request['container'].get('steps', [])
+    app = get_app()
+    cli = app.get_client()
 
-    cli = get_app().get_client()
+    # 1. CREATE NEW CONTAINER FOR BUILD APPLICATION
+
+    container_id = request['container']['_id']
+    steps = request['container'].get('steps', [])
 
     while True:
         res = cli.get('/v1/containers/%s' % container_id)
@@ -40,7 +43,39 @@ def build_application_callback(request):
             break
         gevent.sleep(1)
 
-    # TODO(Peer): execute steps.
+    # 2. RUN SCRIPTS TO BUILD APPLICATION
+
+    _conn = res['connection']
+    container_address = _conn['host']
+    container_username = _conn['username']
+    container_password = _conn['password']
+    for step in steps:
+        agt = PeerAgent.builder(container_address=container_address,
+                                container_username=container_username,
+                                container_password=container_password)
+        shell, script = step
+        fn = 'run_%s' % shell
+        assert hasattr(agt, fn)
+        res = getattr(agt, fn)(script)
+        app.logger.info('[%s] %s', shell.upper(), script)
+        if res['status_code']:
+            app.logger.error('\n  > '.join([''] + res['std_err'].split('\n')))
+            return
+        app.logger.info('\n > '.join([''] + res['std_out'].split('\n')))
+
+    agt = PeerAgent.builder(container_address=container_address,
+                            container_username=container_username,
+                            container_password=container_password)
+
+    # 3. COMMIT CONTAINER TO APPLICATION
+
+    ## TODO(Peer): implement graceful shutdown on stop action
+    agt.shutdown()
+    while True:
+        agt = PeerAgent.builder(container_id=container_id)
+        if not agt.is_alive():
+            break
+        gevent.sleep(1)
 
     res = cli.post('/v1/action/stop', data={'container': {'_id': container_id}})
 
@@ -50,14 +85,30 @@ def build_application_callback(request):
             break
         gevent.sleep(1)
 
+    res = cli.post(
+        '/v1/action/commit',
+        data={'container': {'_id': container_id},
+              'application': {'name': request['application']['name'],
+                              'program': request['application']['program'],
+                              'cmdline': request['application']['cmdline']}})
+
+    while True:
+        res = cli.get('/v1/containers/%s' % container_id)
+        if res.json['status'] == 'stop':
+            break
+        gevent.sleep(1)
+
+    if request['container']['autoremove']:
+        res = cli.post(
+            '/v1/action/rm',
+            data={'container': {'_id': container_id}})
 
 def build_application():
     req = parse_request()
-    cli = get_app().get_client()
     res = cli.post('/v1/cation/run', data={'application': {'_id': req['application']['from']}})
     container_id = res.json['_id']
-    req['container']['id'] = container_id
-    gevent.spawn(build_application_callback, req)
+    req['container']['_id'] = container_id
+    thread = gevent.spawn(build_application_callback, req)
     return cli.get('/v1/containers/%s' % container_id)
 
 ACTION = build_application

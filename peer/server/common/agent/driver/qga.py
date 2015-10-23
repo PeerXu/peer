@@ -106,5 +106,13 @@ class QemuGuestAgentDriver(AgentDriverInterface):
     def _custom_initialize(self, agent):
         self.container_id = agent.container_id
         agent._get_local_address = self._get_local_address
+        agent._is_alive = self._is_alive
+
+    def _is_alive(self):
+        try:
+            dom = self.domain
+            return dom is not None
+        except libvirt.libvirtError as ex:
+            return False
 
 DRIVER = QemuGuestAgentDriver

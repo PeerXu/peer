@@ -1,6 +1,7 @@
 import gevent
 from flask import request
 from flask import json
+from flask import current_app
 
 from peer.server.main import get_app
 from peer.server.utils import ParsedRequest

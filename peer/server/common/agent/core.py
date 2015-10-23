@@ -41,6 +41,10 @@ class PeerAgent(object):
             except Exception as ex:
                 gevent.sleep(self.interval)
 
+    @DRIVERS.QemuGuestAgentDriver
+    def is_alive(self):
+        return self._is_alive()
+
     @DRIVERS.WinRMAgentDriver
     def get_rdp_info(self):
         resp = self._run_ps('Get-WmiObject -namespace root/cimv2/terminalservices -class "Win32_TSGeneralSetting"')
@@ -76,6 +80,9 @@ class PeerAgent(object):
 
         return {'server': None, 'sha1hash': None}
 
+    @DRIVERS.WinRMAgentDriver
+    def shutdown(self, delay=0):
+        return self._run_cmd("shutdown -s -t %s" % delay)
 
     @DRIVERS.WinRMAgentDriver
     def run_cmd(self, script):
