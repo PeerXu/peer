@@ -69,7 +69,7 @@ def parse(path):
 
             _cmd, argv = line.split(' ', 1)
             argv = argv.lstrip()
-            cmd = cmd.lower().replace('-', '_')
+            cmd = _cmd.lower().replace('-', '_')
 
             fn = 'parse_%s' % cmd
             if fn not in parsers:

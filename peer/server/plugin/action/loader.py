@@ -3,13 +3,15 @@ from peer.server.plugin.action import run
 from peer.server.plugin.action import rm
 from peer.server.plugin.action import stop
 from peer.server.plugin.action import start
+from peer.server.plugin.action import build
 
 plugins = [
     commit,
     run,
     rm,
     stop,
-    start
+    start,
+    build
 ]
 
 plugin_prefix = 'action'

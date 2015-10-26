@@ -111,7 +111,7 @@ class QemuGuestAgentDriver(AgentDriverInterface):
     def _is_alive(self):
         try:
             dom = self.domain
-            return dom is not None
+            return dom.info()[0] != libvirt.VIR_DOMAIN_SHUTOFF
         except libvirt.libvirtError as ex:
             return False
 

@@ -45,7 +45,7 @@ def build_application_callback(request):
 
     # 2. RUN SCRIPTS TO BUILD APPLICATION
 
-    _conn = res['connection']
+    _conn = res.json['connection']
     container_address = _conn['host']
     container_username = _conn['username']
     container_password = _conn['password']
@@ -105,7 +105,8 @@ def build_application_callback(request):
 
 def build_application():
     req = parse_request()
-    res = cli.post('/v1/cation/run', data={'application': {'_id': req['application']['from']}})
+    cli = get_app().get_client()
+    res = cli.post('/v1/action/run', data={'application': {'_id': req['application']['from']}})
     container_id = res.json['_id']
     req['container']['_id'] = container_id
     thread = gevent.spawn(build_application_callback, req)

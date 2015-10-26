@@ -3,6 +3,7 @@ TAGS
 cscope.*
 peer.zip
 
+Peerfile
 dist/
 build/
 peer.egg-info/
