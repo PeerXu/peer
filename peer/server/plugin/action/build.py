@@ -1,11 +1,9 @@
-import sys
-import gevent
-import libvirt_qemu
 from flask import request
 
 from peer.server.main import get_app
 from peer.server.utils import open_libvirt_connection
 from peer.server.common.agent import PeerAgent
+from peer.server.common import task
 
 URI = 'build'
 NAME = 'action|application|build'
@@ -41,7 +39,7 @@ def build_application_callback(request):
         res = cli.get('/v1/containers/%s' % container_id)
         if res.json['status'] == 'running':
             break
-        gevent.sleep(1)
+        task.sleep(1)
 
     # 2. RUN SCRIPTS TO BUILD APPLICATION
 
@@ -75,7 +73,7 @@ def build_application_callback(request):
         agt = PeerAgent.builder(container_id=container_id)
         if not agt.is_alive():
             break
-        gevent.sleep(1)
+        task.sleep(1)
 
     res = cli.post('/v1/action/stop', data={'container': {'_id': container_id}})
 
@@ -83,7 +81,7 @@ def build_application_callback(request):
         res = cli.get('/v1/containers/%s' % container_id)
         if res.json['status'] == 'stop':
             break
-        gevent.sleep(1)
+        task.sleep(1)
 
     res = cli.post(
         '/v1/action/commit',
@@ -96,7 +94,7 @@ def build_application_callback(request):
         res = cli.get('/v1/containers/%s' % container_id)
         if res.json['status'] == 'stop':
             break
-        gevent.sleep(1)
+        task.sleep(1)
 
     if request['container']['autoremove']:
         res = cli.post(
@@ -109,7 +107,7 @@ def build_application():
     res = cli.post('/v1/action/run', data={'application': {'_id': req['application']['from']}})
     container_id = res.json['_id']
     req['container']['_id'] = container_id
-    thread = gevent.spawn(build_application_callback, req)
+    thread = task.spawn(build_application_callback, req)
     return cli.get('/v1/containers/%s' % container_id)
 
 ACTION = build_application

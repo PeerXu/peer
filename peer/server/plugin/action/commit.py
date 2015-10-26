@@ -1,14 +1,12 @@
 import os
-import gevent
 from subprocess import Popen
 from subprocess import PIPE
 from flask import request
-from flask import json
-from flask import current_app
 
 from peer.server.config import get_config
 from peer.server.main import get_app
 from peer.server.utils import ParsedRequest
+from peer.server.common import task
 
 CONFIG = get_config()
 
@@ -40,7 +38,7 @@ def _commit_container_callback(container_id, application_id):
     while True:
         if p.poll() is not None:
             break
-        gevent.sleep(1)
+        task.sleep(1)
 
     res = cli.get('/v1/containers/%s' % container_id)
     _etag = res.json['_etag']
@@ -70,7 +68,7 @@ def commit_container():
               headers={'If-Match': _etag},
               data={'status': 'commiting'})
 
-    gevent.spawn(_commit_container_callback, container_id, application_id)
+    task.spawn(_commit_container_callback, container_id, application_id)
 
     return cli.get('/v1/containers/%s' % container_id)
 

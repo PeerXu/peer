@@ -1,11 +1,10 @@
-import gevent
 from flask import request
 from flask import json
-from flask import current_app
 
 from peer.server.main import get_app
 from peer.server.utils import ParsedRequest
 from peer.common.utils import random_name
+from peer.server.common import task
 
 URI = 'run'
 NAME = 'action|container|run'
@@ -32,7 +31,7 @@ def _run_container_callback(container_id):
         res = cli.get('/v1/containers/%s' % container_id)
         if res.json['status'] == 'stop':
             break
-        gevent.sleep(1)
+        task.sleep(1)
 
     _etag = res.json['_etag']
 
@@ -53,7 +52,7 @@ def run_container():
                                     'autoremove': req.args['container']['autoremove']}))
 
     container_id = res.json['_id']
-    gevent.spawn(_run_container_callback, container_id)
+    task.spawn(_run_container_callback, container_id)
 
     return cli.get('/v1/containers/%s' % container_id)
 

@@ -1,5 +1,4 @@
 import os
-import gevent
 import libvirt_qemu
 from flask import json
 from libvirt import libvirtError
@@ -8,6 +7,7 @@ from peer.server.main import get_app
 from peer.server.utils import open_libvirt_connection
 from peer.server.common.agent import PeerAgent
 from peer.server.config import get_config
+from peer.server.common import task
 
 CONFIG = get_config()
 
@@ -124,7 +124,7 @@ def on_inserted_containers(containers):
                                            core=container['application']['min_core'],
                                            image=img)
         conn.defineXML(xml)
-        gevent.spawn(_create_container_callback, str(container['_id']))
+        task.spawn(_create_container_callback, str(container['_id']))
 
     conn.close()
 
@@ -199,7 +199,7 @@ def _autoremove_container_callback(container_id):
         res = cli.get('/v1/containers/%s' % container_id)
         if res.json['status'] == 'stop':
             break
-        gevent.sleep(1)
+        task.sleep(1)
 
     _etag = res.json['_etag']
     cli.delete('/v1/containers/%s' % container_id, headers={'If-Match': _etag})
@@ -220,7 +220,7 @@ def _shutting_container_callback(container_id):
     etag = res.json['_etag']
 
     if res.json['autoremove']:
-        gevent.spawn(_autoremove_container_callback, container_id)
+        task.spawn(_autoremove_container_callback, container_id)
 
     res = cli.patch('/v1/containers/%s' % container_id,
                     headers={'If-Match': etag},
@@ -240,7 +240,7 @@ def on_updated_containers(container, original):
         _g = globals()
         cbfn = '_%s_container_callback' % container['status']
         if cbfn in _g:
-            gevent.spawn(_g[cbfn], container_id)
+            task.spawn(_g[cbfn], container_id)
 
 
 def load_hook(app):

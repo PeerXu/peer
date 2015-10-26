@@ -1,5 +1,5 @@
 import time
-import gevent
+from peer.server.common import task
 from peer.server.common.agent.driver.loader import load_agent_drivers
 
 DRIVERS = load_agent_drivers()
@@ -39,7 +39,7 @@ class PeerAgent(object):
                     raise
                 return addr
             except Exception as ex:
-                gevent.sleep(self.interval)
+                task.sleep(self.interval)
 
     @DRIVERS.QemuGuestAgentDriver
     def is_alive(self):

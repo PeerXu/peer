@@ -48,7 +48,4 @@ def start_server(host, port):
     app.run(host=host, port=port, debug=True)
 
 def main(argv):
-    from gevent import monkey
-    monkey.patch_all()
-
     start_server(host=OPTIONS['host'], port=OPTIONS['port'])
