@@ -50,7 +50,6 @@ SCHEMA = {
                     'metadata': {
                         'type': 'dict',
                         'default': {},
-                        'nullable': True
                     }
                 }
             },

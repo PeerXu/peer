@@ -4,6 +4,7 @@ from peer.server.plugin.action import rm
 from peer.server.plugin.action import stop
 from peer.server.plugin.action import start
 from peer.server.plugin.action import build
+from peer.server.plugin.action import cv
 
 plugins = [
     commit,
@@ -11,7 +12,8 @@ plugins = [
     rm,
     stop,
     start,
-    build
+    build,
+    cv
 ]
 
 plugin_prefix = 'action'

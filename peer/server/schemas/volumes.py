@@ -12,7 +12,7 @@ SCHEMA = {
             'name': {
                 'type': 'string',
                 'minlength': 1,
-                'maxlength': 16,
+                'maxlength': 64,
                 'required': True,
                 'unique': True
             },
@@ -21,6 +21,10 @@ SCHEMA = {
                 'minlength': 1,
                 'maxlength': 512,
                 'required': True
+            },
+            'metadata': {
+                'type': 'dict',
+                'default': {}
             }
         }
     }

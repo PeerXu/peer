@@ -21,6 +21,8 @@ Actions:
     rm                  rm a existed container
     applications        list applications
     build               build an application from a Peerfile
+    volumes             list volumes
+    cv                  create a new volume
 
 ''' % sys.argv[0])
     sys.exit(1)
