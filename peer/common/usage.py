@@ -18,11 +18,12 @@ Actions:
     start               start a stopped container
     stop                stop a running container
     run                 run a new container
-    rm                  rm a existed container
+    rm                  remove a existed container
     applications        list applications
     build               build an application from a Peerfile
     volumes             list volumes
     cv                  create a new volume
+    rmv                 remove a existed volume
 
 ''' % sys.argv[0])
     sys.exit(1)

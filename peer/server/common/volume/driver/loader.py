@@ -23,3 +23,6 @@ def load_volume_drivers():
                 pass
 
     return _DRIVER
+
+def load_volume_driver(protocol):
+    return load_volume_drivers()[protocol]()

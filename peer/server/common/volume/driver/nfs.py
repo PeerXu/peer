@@ -37,11 +37,13 @@ class NFSVolumeDriver(VolumeDriverInterface):
 
         new_lines = []
         for line in lines:
+            if not line:
+                continue
             st = line.split('\t')
             if st[0] != volume_path:
                 new_lines.append(line)
 
-        with open('/etc/exports') as fw:
+        with open('/etc/exports', 'w') as fw:
             fw.write('\n'.join(new_lines))
 
         self._reload()
