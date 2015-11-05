@@ -200,7 +200,7 @@ def connect_container(argv):
     rdp_string = RDP_CONNECTION_TEMPLATE.format(
         address=container['connection']['host'],
         applicationName='StartupScript',
-        applicationProgram='C:\\Users\\Public\\PeerAgent\\startup.cmd',
+        applicationProgram='C:\\\\Users\\\\Public\\\\PeerAgent\\\\startup.bat',
         applicationCmdline='',
         username=container['connection']['username'],
         passwordHash=container_password_hash)
@@ -220,7 +220,6 @@ def connect_container(argv):
         applicationCmdline=container['application']['cmdline'],
         username=container['connection']['username'],
         passwordHash=container_password_hash)
-
     rdp_file_name = tempfile.mktemp(suffix='.rdp')
     try:
         with open(rdp_file_name, 'w') as rdp_file:
