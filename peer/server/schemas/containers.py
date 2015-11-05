@@ -50,6 +50,7 @@ SCHEMA = {
                     'metadata': {
                         'type': 'dict',
                         'default': {},
+                        'nullable': True
                     }
                 }
             },
@@ -71,11 +72,20 @@ SCHEMA = {
             'volumes': {
                 'type': 'list',
                 'schema': {
-                    'type': 'sha1',
-                    'data_relation': {
-                        'resource': 'volumes',
-                        'field': '_id',
-                        'embeddable': True
+                    'type': 'dict',
+                    'schema': {
+                        'volume': {
+                            'type': 'sha1',
+                            'data_relation': {
+                                'resource': 'volumes',
+                                'field': '_id',
+                                'embeddable': True
+                            }
+                        },
+                        'drive': {
+                            'type': 'string',
+                            'required': True
+                        }
                     }
                 },
                 'default': []

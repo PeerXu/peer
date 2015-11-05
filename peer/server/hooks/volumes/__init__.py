@@ -1,6 +1,6 @@
 from peer.server.main import get_app
 
-from peer.server.common.volume.driver.loader import load_volume_driver
+from peer.server.common.volume import load_volume_driver
 
 def on_inserted_volumes(volumes):
     app = get_app()

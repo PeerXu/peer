@@ -19,7 +19,9 @@ def parse_request():
         },
         'container': {
             'name': body.get('container', {}).get('name', random_name()),
-            'autoremove': body.get('container', {}).get('autoremove', False)
+            'autoremove': body.get('container', {}).get('autoremove', False),
+            'volumes': body.get('container', {}).get('volumes', [])
+
         }
     }
     return r
@@ -49,7 +51,8 @@ def run_container():
                    headers=[('Content-Type', 'application/json')],
                    data=json.dumps({'name': req.args['container']['name'],
                                     'application': req.args['application']['_id'],
-                                    'autoremove': req.args['container']['autoremove']}))
+                                    'autoremove': req.args['container']['autoremove'],
+                                    'volumes': req.args['container']['volumes']}))
 
     container_id = res.json['_id']
     task.spawn(_run_container_callback, container_id)

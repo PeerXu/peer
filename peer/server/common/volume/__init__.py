@@ -1,1 +1,1 @@
-from peer.server.common.volume.core import PeerVolume
+from peer.server.common.volume.driver.loader import load_volume_driver

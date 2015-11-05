@@ -1,2 +1,0 @@
-class PeerVolume(object):
-    pass

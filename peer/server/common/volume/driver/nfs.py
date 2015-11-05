@@ -24,7 +24,7 @@ class NFSVolumeDriver(VolumeDriverInterface):
 
         self._reload()
 
-        return CONFIG['VOLUME_NFS_HOST'] + '/' + volume_path
+        return CONFIG['VOLUME_NFS_HOST'] + volume_path
 
     def delete(self, volume):
         volume_path = os.path.join(CONFIG['VOLUME_HOME'], volume['_id'])
@@ -47,5 +47,18 @@ class NFSVolumeDriver(VolumeDriverInterface):
             fw.write('\n'.join(new_lines))
 
         self._reload()
+
+    def mount(self, agent, volumes):
+        from base64 import encodestring
+        script = ''
+        for v in volumes:
+            uri = v['uri']
+            path = uri.split(':')[1].replace('/', '\\')
+            drive = v['drive']
+            script += 'c:\\windows\\system32\\mount.exe %s %s:\n' % (path, drive)
+
+        encscript = encodestring(script).replace('\n', '')
+        script = 'c:\\python27\\python.exe -c "print __import__(\'base64\').decodestring(\'%s\')" > c:\\users\\public\\peeragent\\mount.bat' % encscript
+        agent.run_cmd(script)
 
 DRIVER = NFSVolumeDriver

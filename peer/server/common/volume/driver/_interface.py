@@ -4,3 +4,6 @@ class VolumeDriverInterface(object):
 
     def delete(self, volume):
         pass
+
+    def mount(self, agent, volumes):
+        pass

@@ -81,6 +81,21 @@ class PeerAgent(object):
         return {'server': None, 'sha1hash': None}
 
     @DRIVERS.WinRMAgentDriver
+    def mount_drives(self, volumes):
+        from peer.server.common.volume import load_volume_driver
+
+        group_by_protocol = {}
+        for volume in volumes:
+            protocol = volume['uri'].split('://')[0]
+            if protocol not in group_by_protocol:
+                group_by_protocol[protocol] = []
+            group_by_protocol[protocol].append(volume)
+
+        for protocol, volumes in group_by_protocol.items():
+            drv = load_volume_driver(protocol)
+            drv.mount(self, volumes)
+
+    @DRIVERS.WinRMAgentDriver
     def shutdown(self, delay=0):
         return self._run_cmd("shutdown -s -t %s" % delay)
 

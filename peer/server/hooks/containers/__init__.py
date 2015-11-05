@@ -173,13 +173,23 @@ def _starting_container_callback(container_id):
     addr = PeerAgent.builder(container_id=container_id).get_local_address()
     assert addr
 
-    metadata = PeerAgent.builder(container_address=addr,
-                                 container_username='cloud',
-                                 container_password='asd').get_rdp_info()
-
     cli = get_app().get_client()
     res = cli.get('/v1/containers/%s' % container_id)
     etag = res.json['_etag']
+
+    volumes = []
+    for v in res.json['volumes']:
+        res = cli.get('/v1/volumes/%s' % v['volume'])
+        volumes.append({'uri': res.json['uri'],
+                        'drive': v['drive']})
+
+    PeerAgent.builder(container_address=addr,
+                      container_username='cloud',
+                      container_password='asd').mount_drives(volumes)
+
+    metadata = PeerAgent.builder(container_address=addr,
+                                 container_username='cloud',
+                                 container_password='asd').get_rdp_info()
 
     res = cli.patch('/v1/containers/%s' % container_id,
                     headers={'If-Match': etag},
@@ -217,11 +227,8 @@ def _shutting_container_callback(container_id):
 
     cli = get_app().get_client()
     res = cli.get('/v1/containers/%s' % container_id)
+    autoremove = res.json['autoremove']
     etag = res.json['_etag']
-
-    if res.json['autoremove']:
-        task.spawn(_autoremove_container_callback, container_id)
-
     res = cli.patch('/v1/containers/%s' % container_id,
                     headers={'If-Match': etag},
                     data={'status': 'stop',
@@ -232,6 +239,8 @@ def _shutting_container_callback(container_id):
                               'password': None,
                               'metadata': None}})
 
+    if autoremove:
+        task.spawn(_autoremove_container_callback, container_id)
 
 def on_updated_containers(container, original):
     if 'status' in container:

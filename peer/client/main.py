@@ -195,6 +195,24 @@ def connect_container(argv):
 
 
     container_password_hash = binascii.hexlify(CryptProtectData(unicode(container['connection']['password']), u'psw', None, None, None, 0))
+
+    # Invoke Startup Script
+    rdp_string = RDP_CONNECTION_TEMPLATE.format(
+        address=container['connection']['host'],
+        applicationName='StartupScript',
+        applicationProgram='C:\\Users\\Public\\PeerAgent\\startup.cmd',
+        applicationCmdline='',
+        username=container['connection']['username'],
+        passwordHash=container_password_hash)
+    rdp_file_name = tempfile.mktemp(suffix='.rdp')
+    try:
+        with open(rdp_file_name, 'w') as rdp_file:
+            rdp_file.write(rdp_string)
+        os.system('mstsc ' + rdp_file_name)
+    finally:
+        os.path.exists(rdp_file_name) and os.unlink(rdp_file_name)
+
+    # Connect to Application
     rdp_string = RDP_CONNECTION_TEMPLATE.format(
         address=container['connection']['host'],
         applicationName=container['application']['name'],
@@ -211,7 +229,7 @@ def connect_container(argv):
     finally:
         os.path.exists(rdp_file_name) and os.unlink(rdp_file_name)
 
-    ## disable cleanup registry now.
+    # Disable Cleanup Register
     # reg_string = RDP_CLEANUP_CERTIFICATE_TEMPLATE.format(
     #     containerAddress=container['connection']['host'])
 
@@ -443,7 +461,10 @@ def run_container(argv):
 
     body = {
         'application': {'_id': application_id},
-        'container': {'autoremove': autoremove}
+        'container': {
+            'autoremove': autoremove,
+            'volumes': OPTIONS['volumes']
+        }
     }
     if container_name:
         body['container']['name'] = container_name
@@ -463,10 +484,11 @@ def run_container(argv):
 
 def parse_args_run_container(argv):
     try:
-        opts, args = getopt(argv, 'hr', ['help', 'autoremove'])
+        opts, args = getopt(argv, 'hrv:', ['help', 'autoremove', 'volume='])
     except GetoptError as ex:
         run_container_usage()
 
+    OPTIONS['volumes'] = []
     for k, v in opts:
         if k in ('-h', '--help'):
             run_container_usage()
@@ -474,6 +496,14 @@ def parse_args_run_container(argv):
             OPTIONS['name'] = v
         elif k in ('-r', '--autoremove'):
             OPTIONS['autoremove'] = True
+        elif k in ('-v', '--volume'):
+            if ':' not in v:
+                run_container_usage()
+            volume_id, drive = v.split(':', 1)
+            OPTIONS['volumes'].append({
+                'volume': volume_id,
+                'drive': drive
+            })
 
     return args
 
@@ -486,6 +516,7 @@ Options:
     -h, --help                    print usage
     -n, --name=<random>           container name
     -r, --autoremove=false        auto remove when stop container
+    -v, --volume=[]               bind mount a volume
 
 Arguments:
     application                   application id  [require]

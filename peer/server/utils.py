@@ -12,6 +12,8 @@ class PeerResponse(Response):
     def json(self):
         if not hasattr(self, '_json'):
             setattr(self, '_json', json.loads(self.data))
+        if '_etag' in self._json:
+            self._json['_etag'] = str(self._json['_etag'])
         return self._json
 
     @property
