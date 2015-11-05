@@ -13,7 +13,7 @@ class NFSVolumeDriver(VolumeDriverInterface):
         os.system('exportfs -rv')
 
     def create(self, volume):
-        volume_path = os.path.join(CONFIG['VOLUME_HOME'], volume['_id'])
+        volume_path = os.path.join(CONFIG['VOLUME_HOME'], volume['name'])
 
         if os.path.exists(volume_path):
             os.rmdir(volume_path)
@@ -27,7 +27,7 @@ class NFSVolumeDriver(VolumeDriverInterface):
         return CONFIG['VOLUME_NFS_HOST'] + volume_path
 
     def delete(self, volume):
-        volume_path = os.path.join(CONFIG['VOLUME_HOME'], volume['_id'])
+        volume_path = os.path.join(CONFIG['VOLUME_HOME'], volume['name'])
 
         if os.path.exists(volume_path):
             os.rmdir(volume_path)
