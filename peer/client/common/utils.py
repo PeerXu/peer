@@ -1,3 +1,7 @@
+import json
+import httplib
+from peer.common import options
+
 def _get_http_connection(options):
 
     class PeerClientResponse(httplib.HTTPResponse, object):
@@ -27,5 +31,4 @@ def _get_http_connection(options):
     return PeerClientHTTPConnection(options['host'], options['port'])
 
 def get_http_connection():
-    from peer.common import options
-    return _get_http_connection(options.CLIENT_OPTIONS)
+    return _get_http_connection(options.OPTIONS)
