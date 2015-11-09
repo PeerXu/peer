@@ -1,6 +1,3 @@
-import os
-import tempfile
-
 import sys
 from getopt import getopt
 from getopt import GetoptError
