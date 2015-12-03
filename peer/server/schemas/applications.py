@@ -6,7 +6,7 @@ SCHEMA = {
         'item_url': 'regex("[0-9a-f]{40}")',
         'schema': {
             '_id': {
-                'type': 'sha1'
+                'type': 'sha256'
             },
             'name': {
                 'type': 'string',
@@ -30,7 +30,7 @@ SCHEMA = {
                 'default': 512
             },
             'from': {
-                'type': 'sha1',
+                'type': 'sha256',
                 'data_relation': {
                     'resource': 'applications',
                     'field': '_id',

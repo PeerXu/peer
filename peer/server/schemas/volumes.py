@@ -7,7 +7,7 @@ SCHEMA = {
         'item_url': REGEX_SHA1,
         'schema': {
             '_id': {
-                'type': 'sha1'
+                'type': 'sha256'
             },
             'name': {
                 'type': 'string',

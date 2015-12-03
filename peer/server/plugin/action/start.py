@@ -1,14 +1,15 @@
 from flask import request
 
-from peer.server.config import get_config
+from peer.server.common import config
 from peer.server.main import get_app
 from peer.server.utils import ParsedRequest
 
-CONFIG = get_config()
+cfg = config.load()
 
 URI = 'start'
 NAME = 'action|container|start'
 METHODS = ['POST']
+
 
 def parse_request():
     body = request.json
@@ -19,6 +20,7 @@ def parse_request():
         }
     }
     return r
+
 
 def start_container():
     req = parse_request()
@@ -35,5 +37,6 @@ def start_container():
                     data={'status': 'booting'})
 
     return cli.get('/v1/containers/%s' % container_id)
+
 
 ACTION = start_container

@@ -4,10 +4,7 @@ from getopt import getopt
 from getopt import GetoptError
 
 import tempfile
-from peer.common import options
 from peer.client.main import get_http_connection
-
-OPTIONS = options.OPTIONS
 
 
 class RemoteApp(object):
@@ -150,6 +147,7 @@ EnableCredSSPSupport:i:0
             ra._import_certificate_hash(server, certificate_hash)
         ra.run(app_name, app_program, app_cmdline)
 
+
 def usage():
     sys.stdout.write('''Usage: %s [...] connect [OPTIONS] <container>
 
@@ -165,6 +163,7 @@ Arguments:
 
 ''' % sys.argv[0])
     sys.exit(1)
+
 
 def parse_args(argv):
     try:

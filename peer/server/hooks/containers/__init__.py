@@ -6,10 +6,10 @@ from libvirt import libvirtError
 from peer.server.main import get_app
 from peer.server.utils import open_libvirt_connection
 from peer.server.common.agent import PeerAgent
-from peer.server.config import get_config
+from peer.server.common import config
 from peer.server.common import task
 
-CONFIG = get_config()
+cfg = config.load()
 
 KVM_INSTANCE_TEMPLATE = '''
 <domain type='kvm'>
@@ -111,9 +111,9 @@ def on_inserted_containers(containers):
         res = cli.get('/v1/containers/%s?embedded={"application":1}' % str(container['_id']))
         container = res.json
 
-        base_img = os.path.join(CONFIG['APPLICATION_IMAGE_HOME'],
+        base_img = os.path.join(cfg.application_image_home,
                                 '%s.qcow2' % container['application']['_id'])
-        img = os.path.join(CONFIG['CONTAINER_IMAGE_HOME'],
+        img = os.path.join(cfg.container_image_home,
                            '%s.qcow2' % container['_id'])
         cmd = 'qemu-img create -f qcow2 -b %s %s 500G' % (base_img, img)
         os.system(cmd)
@@ -141,7 +141,7 @@ def on_deleted_item_containers(container):
 
     conn.close()
 
-    img = os.path.join(CONFIG['CONTAINER_IMAGE_HOME'], '%s.qcow2' % container['_id'])
+    img = os.path.join(cfg.container_image_home, '%s.qcow2' % container['_id'])
     cmd = 'rm -f %s' % img
     os.system(cmd)
 

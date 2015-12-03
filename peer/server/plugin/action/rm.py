@@ -1,14 +1,12 @@
 from flask import request
 
-from peer.server.config import get_config
 from peer.server.main import get_app
 from peer.server.utils import ParsedRequest
-
-CONFIG = get_config()
 
 URI = 'rm'
 NAME = 'action|container|rm'
 METHODS = ['POST']
+
 
 def parse_request():
     body = request.json
@@ -19,6 +17,7 @@ def parse_request():
         }
     }
     return r
+
 
 def rm_container():
     req = parse_request()
@@ -34,5 +33,6 @@ def rm_container():
                      headers={'If-Match': _etag})
 
     return '', 204
+
 
 ACTION = rm_container

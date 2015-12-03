@@ -3,16 +3,19 @@ from subprocess import Popen
 from subprocess import PIPE
 from flask import request
 
-from peer.server.config import get_config
 from peer.server.main import get_app
 from peer.server.utils import ParsedRequest
 from peer.server.common import task
+from peer.server.common import config
 
-CONFIG = get_config()
+
+cfg = config.load()
+
 
 URI = 'commit'
 NAME = 'action|container|commit'
 METHODS = ['POST']
+
 
 def parse_request():
     body = request.json
@@ -29,11 +32,12 @@ def parse_request():
     }
     return r
 
+
 def _commit_container_callback(container_id, application_id):
     cli = get_app().get_client()
 
-    application_img = os.path.join(CONFIG['APPLICATION_IMAGE_HOME'], '%s.qcow2' % application_id)
-    container_img = os.path.join(CONFIG['CONTAINER_IMAGE_HOME'], '%s.qcow2' % container_id)
+    application_img = os.path.join(cfg.application_image_home, '%s.qcow2' % application_id)
+    container_img = os.path.join(cfg.container_image_home, '%s.qcow2' % container_id)
     p = Popen(['qemu-img', 'convert', '-f', 'qcow2', '-O', 'qcow2', container_img, application_img], stdout=PIPE)
     while True:
         if p.poll() is not None:
@@ -46,6 +50,7 @@ def _commit_container_callback(container_id, application_id):
     res = cli.patch('/v1/containers/%s' % container_id,
                     headers={'If-Match': _etag},
                     data={'status': 'stop'})
+
 
 def commit_container():
     req = parse_request()
@@ -71,5 +76,6 @@ def commit_container():
     task.spawn(_commit_container_callback, container_id, application_id)
 
     return cli.get('/v1/containers/%s' % container_id)
+
 
 ACTION = commit_container

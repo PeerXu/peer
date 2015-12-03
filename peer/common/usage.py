@@ -13,6 +13,7 @@ Options:
 Actions:
 
     ps                  list containers
+    pull                pull an application or a repository from a registry
     connect             connect to container
     commit              create a new application from container's change
     start               start a stopped container

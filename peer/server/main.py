@@ -1,6 +1,5 @@
-from peer.server.common import options
+from peer.common import config
 
-OPTIONS = options.OPTIONS
 
 def make_app():
     from eve import Eve
@@ -35,6 +34,7 @@ def make_app():
     load_plugins(app)
     return app
 
+
 def get_app():
     try:
         from flask import current_app
@@ -43,9 +43,12 @@ def get_app():
     except RuntimeError as ex:
         return make_app()
 
+
 def start_server(host, port):
     app = get_app()
     app.run(host=host, port=port, debug=True)
 
+
 def main(argv):
-    start_server(host=OPTIONS['host'], port=OPTIONS['port'])
+    cfg = config.load()
+    start_server(host=cfg.host, port=cfg.port)

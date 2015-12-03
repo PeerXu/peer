@@ -1,10 +1,8 @@
 from flask import request
 
-from peer.server.config import get_config
 from peer.server.main import get_app
 from peer.server.utils import ParsedRequest
 
-CONFIG = get_config()
 
 URI = 'stop'
 NAME = 'action|container|stop'

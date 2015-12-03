@@ -2,10 +2,8 @@ import sys
 from getopt import getopt
 from getopt import GetoptError
 
-from peer.common import options
 from peer.client.main import get_http_connection
 
-OPTIONS = options.OPTIONS
 
 def usage():
     sys.stdout.write('''Usage: %s [...] volumes

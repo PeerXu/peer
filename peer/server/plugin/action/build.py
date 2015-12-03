@@ -1,13 +1,13 @@
 from flask import request
 
 from peer.server.main import get_app
-from peer.server.utils import open_libvirt_connection
 from peer.server.common.agent import PeerAgent
 from peer.server.common import task
 
 URI = 'build'
 NAME = 'action|application|build'
 METHODS = ['POST']
+
 
 def parse_request():
     body = request.json
@@ -25,6 +25,7 @@ def parse_request():
             'autoremove': body.get('container', {}).get('autoremove', True)
         }
     }
+
 
 def build_application_callback(request):
     app = get_app()
@@ -101,6 +102,7 @@ def build_application_callback(request):
             '/v1/action/rm',
             data={'container': {'_id': container_id}})
 
+
 def build_application():
     req = parse_request()
     cli = get_app().get_client()
@@ -109,5 +111,6 @@ def build_application():
     req['container']['_id'] = container_id
     thread = task.spawn(build_application_callback, req)
     return cli.get('/v1/containers/%s' % container_id)
+
 
 ACTION = build_application

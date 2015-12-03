@@ -3,7 +3,9 @@ from flask.wrappers import Response
 from flask.testing import FlaskClient
 from flask import json
 
+
 REGEX_SHA1 = 'regex("[0-9a-f]{40}")'
+
 
 class PeerResponse(Response):
     default_mimetype = 'application/json'
@@ -19,6 +21,7 @@ class PeerResponse(Response):
     @property
     def statusCode(self):
         return self.status_code
+
 
 class PeerClient(FlaskClient):
     def open(*args, **kwargs):
@@ -44,6 +47,7 @@ class PeerClient(FlaskClient):
 
 class ParsedRequest(object):
     args = None
+
 
 def open_libvirt_connection():
     return libvirt.open('qemu:///system')

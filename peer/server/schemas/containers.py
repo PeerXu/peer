@@ -7,7 +7,7 @@ SCHEMA = {
         'item_url': REGEX_SHA1,
         'schema': {
             '_id': {
-                'type': 'sha1'
+                'type': 'sha256'
             },
             'name': {
                 'type': 'string',
@@ -61,7 +61,7 @@ SCHEMA = {
                 'allowed': ['creating', 'stop', 'booting', 'starting', 'running', 'connecting', 'connected', 'disconnecting', 'shutting', 'commiting', 'error'],
             },
             'application': {
-                'type': 'sha1',
+                'type': 'sha256',
                 'data_relation': {
                     'resource': 'applications',
                     'field': '_id',
@@ -75,7 +75,7 @@ SCHEMA = {
                     'type': 'dict',
                     'schema': {
                         'volume': {
-                            'type': 'sha1',
+                            'type': 'sha256',
                             'data_relation': {
                                 'resource': 'volumes',
                                 'field': '_id',

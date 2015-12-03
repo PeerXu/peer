@@ -1,9 +1,10 @@
 from peer.server.common.volume.driver._interface import VolumeDriverInterface
 
-from peer.server.config import get_config
+from peer.server.common import config
 import os
 
-CONFIG = get_config()
+cfg = config.load()
+
 
 class NFSVolumeDriver(VolumeDriverInterface):
     NAME = 'NFSVolumeDriver'
@@ -13,7 +14,7 @@ class NFSVolumeDriver(VolumeDriverInterface):
         os.system('exportfs -rv')
 
     def create(self, volume):
-        volume_path = os.path.join(CONFIG['VOLUME_HOME'], volume['name'])
+        volume_path = os.path.join(cfg.volume_home, volume['name'])
 
         if os.path.exists(volume_path):
             os.rmdir(volume_path)
@@ -24,10 +25,10 @@ class NFSVolumeDriver(VolumeDriverInterface):
 
         self._reload()
 
-        return CONFIG['VOLUME_NFS_HOST'] + volume_path
+        return cfg.volume_nfs_host + volume_path
 
     def delete(self, volume):
-        volume_path = os.path.join(CONFIG['VOLUME_HOME'], volume['name'])
+        volume_path = os.path.join(cfg.volume_home, volume['name'])
 
         if os.path.exists(volume_path):
             os.rmdir(volume_path)
@@ -60,5 +61,6 @@ class NFSVolumeDriver(VolumeDriverInterface):
         encscript = encodestring(script).replace('\n', '')
         script = 'c:\\python27\\python.exe -c "print __import__(\'base64\').decodestring(\'%s\')" > c:\\users\\public\\peeragent\\mount.bat' % encscript
         agent.run_cmd(script)
+
 
 DRIVER = NFSVolumeDriver

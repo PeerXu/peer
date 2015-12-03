@@ -2,10 +2,8 @@ import sys
 from getopt import getopt
 from getopt import GetoptError
 
-from peer.common import options
 from peer.client.main import get_http_connection
 
-OPTIONS = options.OPTIONS
 
 def usage():
     sys.stdout.write('''Usage: %s [...] rmv [OPTIONS] <volume>
@@ -21,6 +19,7 @@ Arguments:
 ''' % sys.argv[0])
     sys.exit(1)
 
+
 def parse_args(argv):
     try:
         opts, args = getopt(argv, 'h', ['help'])
@@ -32,6 +31,7 @@ def parse_args(argv):
             usage()
 
     return args
+
 
 def rm_volume(argv):
     argv = parse_args(argv)
@@ -58,6 +58,7 @@ def rm_volume(argv):
     else:
         sys.stderr.write('''Delete Volume: %s Failed
 ''' % volume_id)
+
 
 NAME = 'rmv'
 COMMAND = rm_volume

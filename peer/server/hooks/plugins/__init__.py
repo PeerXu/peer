@@ -1,9 +1,13 @@
-def custom_resource_id(resource, request):
-    from uuid import uuid4
-    from sha import sha
+import os
+import hashlib
 
-    id = sha(str(uuid4())).hexdigest()
-    request.json['_id'] = id
+
+def custom_resource_id(resource, request):
+    if '_id' not in request.json:
+        sha256 = hashlib.sha256()
+        sha256.update(os.urandom(256))
+        id = sha256.hexdigest()
+        request.json['_id'] = id
 
 
 def load_hook(app):

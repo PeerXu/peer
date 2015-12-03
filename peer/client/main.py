@@ -3,11 +3,10 @@ from getopt import getopt
 from getopt import GetoptError
 
 from peer.common.usage import usage
-from peer.common import options
+from peer.client.common import config
 from peer.client.commands import load_commands
 from peer.client.common.utils import get_http_connection
 
-OPTIONS = options.OPTIONS
 
 def ps_containers(argv):
     conn = get_http_connection()
@@ -24,6 +23,7 @@ def ps_containers(argv):
                                                 container['status'],
                                                 container['application']['program'])
     conn.close()
+
 
 def commit_container(argv):
     argv = parse_args_commit_container(argv)
@@ -48,6 +48,7 @@ def commit_container(argv):
         sys.stdout.write('''Commiting Container: %s Failed
 ''' % container_id)
 
+
 def parse_args_commit_container(argv):
     try:
         opts, args = getopt(argv, 'h', ['help'])
@@ -59,6 +60,7 @@ def parse_args_commit_container(argv):
             commit_container_usage()
 
     return args
+
 
 def commit_container_usage():
     sys.stdout.write('''Usage: %s [...] commit [OPTIONS] <container> <name> <program>
@@ -75,6 +77,7 @@ Arguments:
 
 ''' % sys.argv[0])
     sys.exit(1)
+
 
 def start_container(argv):
     argv = parse_args_start_container(argv)
@@ -97,6 +100,7 @@ def start_container(argv):
         sys.stdout.write('''Start Container: %s Failed
 ''' % container_id)
 
+
 def parse_args_start_container(argv):
     try:
         opts, args = getopt(argv, 'h', ['help'])
@@ -108,6 +112,7 @@ def parse_args_start_container(argv):
             start_container_usage()
 
     return args
+
 
 def start_container_usage():
     sys.stdout.write('''Usage: %s [...] start <container>
@@ -122,6 +127,7 @@ Arguments:
 
 ''' % sys.argv[0])
     sys.exit(1)
+
 
 def stop_container(argv):
     argv = parse_args_stop_container(argv)
@@ -144,6 +150,7 @@ def stop_container(argv):
         sys.stdout.write('''Stop Container: %s Failed, %s, %s
 ''' % (container_id, res.reason, res.read()))
 
+
 def parse_args_stop_container(argv):
     try:
         opts, args = getopt(argv, 'h', ['help'])
@@ -155,6 +162,7 @@ def parse_args_stop_container(argv):
             stop_container_usage()
 
     return args
+
 
 def stop_container_usage():
     sys.stdout.write('''Usage: %s [...] stop <container>
@@ -169,6 +177,7 @@ Arguments:
 
 ''' % sys.argv[0])
     sys.exit(1)
+
 
 def rm_container(argv):
     argv = parse_args_rm_container(argv)
@@ -191,6 +200,7 @@ def rm_container(argv):
         sys.stdout.write('''Remove Container: %s Failed
 ''' % container_id)
 
+
 def parse_args_rm_container(argv):
     try:
         opts, args = getopt(argv, 'h', ['help'])
@@ -202,6 +212,7 @@ def parse_args_rm_container(argv):
             rm_container_usage()
 
     return args
+
 
 def rm_container_usage():
     sys.stdout.write('''Usage: %s [...] rm <container>
@@ -217,21 +228,24 @@ Arguments:
 ''' % sys.argv[0])
     sys.exit(1)
 
+
 def run_container(argv):
+    cfg = config.load()
+
     argv = parse_args_run_container(argv)
 
     if len(argv) != 1:
         run_container_usage()
 
     application_id = argv[0]
-    container_name = OPTIONS.get('name')
-    autoremove = OPTIONS.get('autoremove', False)
+    container_name = cfg.get('name')
+    autoremove = cfg.get('autoremove', False)
 
     body = {
         'application': {'_id': application_id},
         'container': {
             'autoremove': autoremove,
-            'volumes': OPTIONS['volumes']
+            'volumes': cfg.volumes
         }
     }
     if container_name:
@@ -250,30 +264,34 @@ def run_container(argv):
         sys.stdout.write('''Run Application %s Failed
 ''' % application_id)
 
+
 def parse_args_run_container(argv):
+    cfg = config.load()
+
     try:
         opts, args = getopt(argv, 'hrv:', ['help', 'autoremove', 'volume='])
     except GetoptError as ex:
         run_container_usage()
 
-    OPTIONS['volumes'] = []
+    cfg.set('volumes', [])
     for k, v in opts:
         if k in ('-h', '--help'):
             run_container_usage()
         elif k in ('-n', '--name'):
-            OPTIONS['name'] = v
+            cfg.set('name', v)
         elif k in ('-r', '--autoremove'):
-            OPTIONS['autoremove'] = True
+            cfg.set('autoremove', True)
         elif k in ('-v', '--volume'):
             if ':' not in v:
                 run_container_usage()
             volume_id, drive = v.split(':', 1)
-            OPTIONS['volumes'].append({
+            cfg.volumes.append({
                 'volume': volume_id,
                 'drive': drive
             })
 
     return args
+
 
 def run_container_usage():
     sys.stdout.write('''Usage: %s [...] run [OPTIONS] <application>
@@ -292,6 +310,7 @@ Arguments:
 ''' % sys.argv[0])
     sys.exit(1)
 
+
 def ps_applications(argv):
     conn = get_http_connection()
     conn.request('GET', '/v1/applications')
@@ -307,15 +326,19 @@ def ps_applications(argv):
                                                  application['program'],
                                                  application['cmdline'])
 
+
 def parse_args(opts, args):
+    cfg = config.load()
+
     for k, v in opts:
         if k in ('-h', '--help'):
             usage()
         elif k in ('-H', '--host'):
-            OPTIONS['host'] = v
+            cfg.set('host', v)
             continue
         elif k in ('-P', '--port'):
-            OPTIONS['port'] = int(v)
+            cfg.set('port', int(v))
+
 
 def main(argv):
     try:
