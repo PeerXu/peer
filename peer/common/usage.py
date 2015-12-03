@@ -1,5 +1,6 @@
 import sys
 
+
 def usage():
     sys.stdout.write('''Usage: %s [OPTIONS] action [arg ...]
 

@@ -27,7 +27,7 @@ def parse_args(argv):
 
     try:
         opts, args = getopt(argv, 'hnt', ['help', 'name', 'type'])
-    except GetoptError as ex:
+    except GetoptError:
         usage()
 
     cfg.set('type', 'nfs')
@@ -44,6 +44,7 @@ def parse_args(argv):
 
 
 def create_volume(argv):
+    cfg = config.load()
     argv = parse_args(argv)
 
     if cfg.type not in VOLUME_TYPES:

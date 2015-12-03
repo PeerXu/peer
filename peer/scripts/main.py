@@ -16,7 +16,7 @@ def main():
 
     try:
         opts, args = getopt(argv[1:], 'hDH:P:', ['help', 'debug', 'host=', 'port='])
-    except GetoptError as ex:
+    except GetoptError:
         usage()
 
     for k, v in opts:

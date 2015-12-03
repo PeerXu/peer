@@ -1,10 +1,14 @@
+import httplib
+from flask import json
+
+from peer.common import config
+
+
 def random_name():
     return str(__import__('uuid').uuid4()).split('-')[0]
 
 
 def parse_repository_name(name):
-    from peer.common import config
-
     cfg = config.load()
 
     name = name.strip('/')
@@ -15,7 +19,7 @@ def parse_repository_name(name):
     return (registry, namespace, repository, tag)
 
 
-def get_http_connection(options):
+def get_http_connection(cfg):
 
     class PeerClientResponse(httplib.HTTPResponse, object):
         @property

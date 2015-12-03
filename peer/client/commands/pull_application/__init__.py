@@ -3,8 +3,8 @@ from getopt import getopt
 from getopt import GetoptError
 
 from peer.client.main import get_http_connection
-from peer.client.common import config
 from peer.common.utils import parse_repository_name
+
 
 def usage():
     sys.stdout.write('''Usage: %s [...] pull [OPTIONS] <name>[:<tag>]
@@ -23,11 +23,9 @@ Arguments:
 
 
 def parse_args(argv):
-    cfg = config.load()
-
     try:
         opts, args = getopt(argv, 'h', ['help'])
-    except GetoptError as ex:
+    except GetoptError:
         usage()
 
     for k, v in opts:

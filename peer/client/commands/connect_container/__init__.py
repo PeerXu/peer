@@ -9,7 +9,7 @@ from peer.client.main import get_http_connection
 
 class RemoteApp(object):
 
-    ## about RDP FILE SETTINGS: http://www.donkz.nl/files/rdpsettings.html
+    # about RDP FILE SETTINGS: http://www.donkz.nl/files/rdpsettings.html
     RDP_CONNECTION_TEMPLATE = '''
 screen mode id:i:2
 use multimon:i:1
@@ -168,14 +168,15 @@ Arguments:
 def parse_args(argv):
     try:
         opts, args = getopt(argv, 'h', ['help'])
-    except GetoptError as ex:
-        connect_container_usage()
+    except GetoptError:
+        usage()
 
     for k, v in opts:
         if k in ('-h', '--help'):
             usage()
 
     return args
+
 
 def connect_container(argv):
     from platform import platform
@@ -190,8 +191,8 @@ def connect_container(argv):
         sys.exit(255)
 
     try:
-        from win32crypt import CryptProtectData
-    except ImportError as ex:
+        __import__('win32crypt')
+    except ImportError:
         sys.stderr.write('''require package: pywin32
 ''')
         sys.exit(255)
@@ -208,7 +209,7 @@ def connect_container(argv):
     if metadata and metadata['sha1hash'] and metadata['server']:
         sha1hash = metadata['sha1hash']
         server = metadata['server']
-        container_hash = ','.join(map(lambda x, y: x+y, sha1hash[::2], sha1hash[1::2]))
+        container_hash = ','.join(map(lambda x, y: x + y, sha1hash[::2], sha1hash[1::2]))
     else:
         server = None
         container_hash = None

@@ -1,6 +1,4 @@
 import os
-import libvirt_qemu
-from flask import json
 from libvirt import libvirtError
 
 from peer.server.main import get_app
@@ -8,8 +6,6 @@ from peer.server.utils import open_libvirt_connection
 from peer.server.common.agent import PeerAgent
 from peer.server.common import config
 from peer.server.common import task
-
-cfg = config.load()
 
 KVM_INSTANCE_TEMPLATE = '''
 <domain type='kvm'>
@@ -93,6 +89,9 @@ KVM_INSTANCE_TEMPLATE = '''
 </domain>
 '''
 
+cfg = config.load()
+
+
 def _create_container_callback(container_id):
     cli = get_app().get_client()
     res = cli.get('/v1/containers/%s' % container_id)
@@ -155,7 +154,7 @@ def _booting_container_callback(container_id):
         if dom.info()[0] != 1 and os.path.exists(channel_file):
             os.unlink(channel_file)
         dom.create()
-    except Exception as ex:
+    except Exception:
         pass
     finally:
         conn.close()
@@ -220,7 +219,7 @@ def _shutting_container_callback(container_id):
     try:
         dom = conn.lookupByName(container_id)
         dom.destroy()
-    except libvirtError as ex:
+    except libvirtError:
         pass
     finally:
         conn.close()
@@ -241,6 +240,7 @@ def _shutting_container_callback(container_id):
 
     if autoremove:
         task.spawn(_autoremove_container_callback, container_id)
+
 
 def on_updated_containers(container, original):
     if 'status' in container:

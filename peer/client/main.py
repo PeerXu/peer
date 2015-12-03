@@ -52,7 +52,7 @@ def commit_container(argv):
 def parse_args_commit_container(argv):
     try:
         opts, args = getopt(argv, 'h', ['help'])
-    except GetoptError as ex:
+    except GetoptError:
         commit_container_usage()
 
     for k, v in opts:
@@ -104,7 +104,7 @@ def start_container(argv):
 def parse_args_start_container(argv):
     try:
         opts, args = getopt(argv, 'h', ['help'])
-    except GetoptError as ex:
+    except GetoptError:
         start_container_usage()
 
     for k, v in opts:
@@ -154,7 +154,7 @@ def stop_container(argv):
 def parse_args_stop_container(argv):
     try:
         opts, args = getopt(argv, 'h', ['help'])
-    except GetoptError as ex:
+    except GetoptError:
         stop_container_usage()
 
     for k, v in opts:
@@ -204,7 +204,7 @@ def rm_container(argv):
 def parse_args_rm_container(argv):
     try:
         opts, args = getopt(argv, 'h', ['help'])
-    except GetoptError as ex:
+    except GetoptError:
         rm_container_usage()
 
     for k, v in opts:
@@ -270,7 +270,7 @@ def parse_args_run_container(argv):
 
     try:
         opts, args = getopt(argv, 'hrv:', ['help', 'autoremove', 'volume='])
-    except GetoptError as ex:
+    except GetoptError:
         run_container_usage()
 
     cfg.set('volumes', [])
@@ -343,7 +343,7 @@ def parse_args(opts, args):
 def main(argv):
     try:
         opts, args = getopt(argv, 'hH:P:', ['help', 'host=', 'port='])
-    except GetoptError as ex:
+    except GetoptError:
         usage()
 
     parse_args(opts, args)

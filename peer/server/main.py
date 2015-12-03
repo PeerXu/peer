@@ -40,7 +40,7 @@ def get_app():
         from flask import current_app
         current_app._get_current_object()
         return current_app
-    except RuntimeError as ex:
+    except RuntimeError:
         return make_app()
 
 

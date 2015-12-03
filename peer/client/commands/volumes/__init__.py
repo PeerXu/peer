@@ -16,10 +16,11 @@ Options:
 ''' % sys.argv[0])
     sys.exit(1)
 
+
 def parse_args(argv):
     try:
         opts, args = getopt(argv, 'h', ['help'])
-    except GetoptError as ex:
+    except GetoptError:
         usage()
 
     for k, v in opts:
@@ -27,6 +28,7 @@ def parse_args(argv):
             usage()
 
     return args
+
 
 def ps_volumes(argv):
     argv = parse_args(argv)
@@ -44,6 +46,7 @@ def ps_volumes(argv):
                                          volume['name'][:20],
                                          volume['uri'])
     conn.close()
+
 
 NAME = 'volumes'
 COMMAND = ps_volumes

@@ -68,7 +68,7 @@ def build_application_callback(request):
 
     # 3. COMMIT CONTAINER TO APPLICATION
 
-    ## TODO(Peer): implement graceful shutdown on stop action
+    # TODO(Peer): implement graceful shutdown on stop action
     agt.shutdown()
     while True:
         agt = PeerAgent.builder(container_id=container_id)
@@ -109,7 +109,8 @@ def build_application():
     res = cli.post('/v1/action/run', data={'application': {'_id': req['application']['from']}})
     container_id = res.json['_id']
     req['container']['_id'] = container_id
-    thread = task.spawn(build_application_callback, req)
+    # TODO(Peer): progress bar for building.
+    task.spawn(build_application_callback, req)
     return cli.get('/v1/containers/%s' % container_id)
 
 

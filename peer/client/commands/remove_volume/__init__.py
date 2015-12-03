@@ -23,7 +23,7 @@ Arguments:
 def parse_args(argv):
     try:
         opts, args = getopt(argv, 'h', ['help'])
-    except GetoptError as ex:
+    except GetoptError:
         usage()
 
     for k, v in opts:

@@ -3,6 +3,7 @@ import gzip
 import tempfile
 
 from peer.server.common import config
+from peer.common.utils import json
 
 
 class Graph(object):
@@ -40,8 +41,7 @@ class Graph(object):
             f.write(json.dumps(app_json))
 
         # TODO(Peer): match checksum before decompress
-        with gzip.open(app_compressed_layer, 'rb') as layer, \
-             tempfile.NamedTemporaryFile(delete=False) as tmp:
+        with gzip.open(app_compressed_layer, 'rb') as layer, tempfile.NamedTemporaryFile(delete=False) as tmp:
             tmp_path = tmp.name
             while True:
                 chunk = layer.read(self.BUFSIZ)

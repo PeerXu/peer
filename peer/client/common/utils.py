@@ -1,5 +1,3 @@
-import json
-import httplib
 from peer.common import utils
 from peer.client.common import config
 
