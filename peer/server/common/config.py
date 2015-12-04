@@ -8,7 +8,8 @@ def load():
 
     from peer.common import config
     cfg = config.load()
-    config = {
+    conf = {
+        'host': '0.0.0.0',
         'peer_home': '/home/cloud/peer',
         'container_home': '/home/cloud/peer/containers',
         'container_image_home': '/home/cloud/peer/containers/images',
@@ -17,6 +18,6 @@ def load():
         'volume_home': '/volumes',
         'volume_nfs_host': '10.12.31.1'
     }
-    config.update(cfg._config)
-    _config = config.Config(config)
+    conf.update(cfg._config)
+    _config = config.Config(conf)
     return _config

@@ -1,4 +1,4 @@
-from peer.common import config
+from peer.server.common import config
 
 
 def make_app():
