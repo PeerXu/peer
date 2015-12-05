@@ -9,9 +9,9 @@ if not platform().startswith('Linux'):
     ]
 else:
     requires = [
-        "eve>=0.5.3",
-        "pymongo>=2.8.1",
-        "libvirt-python>=1.2.9",
+        "eve==0.5.3",
+        "pymongo==2.8.1",
+        "libvirt-python>=1.2.2",
         "pywinrm==0.0.3"
     ]
 

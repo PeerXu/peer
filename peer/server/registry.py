@@ -1,5 +1,9 @@
 from peer.server.common import config
-from peer.common.utils import get_http_connection
+from peer.common.utils import _get_http_connection as get_http_connection
+
+
+def new_registry(registry):
+    return Registry.new_registry(registry)
 
 
 class Registry(object):
@@ -14,6 +18,7 @@ class Registry(object):
         return cls(registry, version)
 
     def get_http_connection(self):
+        cfg = config.load()
         host, port = self._registry.split(':') if ':' in self._registry else (self._registry, cfg.registry_port)
 
         return get_http_connection(host, port)
@@ -44,7 +49,7 @@ class Registry(object):
 
     def get_remote_history(self, app_id):
         conn = self.get_http_connection()
-        conn.request('GET','/v1/applications/{0}/ancestry'.format(app_id))
+        conn.request('GET', '/v1/applications/{0}/ancestry'.format(app_id))
 
         res = conn.getresponse()
 

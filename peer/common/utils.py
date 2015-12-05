@@ -20,6 +20,10 @@ def parse_repository_name(name):
 
 
 def get_http_connection(cfg):
+    return _get_http_connection(cfg.host, cfg.port)
+
+
+def _get_http_connection(host, port):
 
     class PeerClientResponse(httplib.HTTPResponse, object):
         @property
@@ -45,4 +49,4 @@ def get_http_connection(cfg):
             return super(PeerClientHTTPConnection, self) \
                 .request(method, url, body=body, headers=headers)
 
-    return PeerClientHTTPConnection(cfg.host, cfg.port)
+    return PeerClientHTTPConnection(host, port)

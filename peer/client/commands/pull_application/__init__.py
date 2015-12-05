@@ -57,6 +57,8 @@ def pull_application(argv):
     conn.request('POST', '/v1/action/pull', body=body)
     res = conn.getresponse()
 
+    tag = tag or '(null)'
+
     # TODO(Peer): need progress bar
     if res.status == 200:
         sys.stdout.write('''Pull Repository %s/%s:%s from %s

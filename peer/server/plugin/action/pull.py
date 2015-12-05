@@ -32,8 +32,9 @@ def _pull_repository(repo_info):
     namespace = repo_info['namespace']
     repository = repo_info['repository']
     asked_tag = repo_info['tag']
-    r = registry.new_registry(repo['registry'])
-    repo_data = r.get_repository_data(namespace, repository)
+    r = registry.new_registry(repo_info['registry'])
+    # TODO(Peer): ignore repository data.
+    # repo_data = r.get_repository_data(namespace, repository)
     tags = r.get_remote_tags(namespace, repository)
 
     success = False
@@ -75,7 +76,7 @@ def pull_application():
 
     success = _pull_repository(req.args['application'])
 
-    return PeerResponse()
+    return PeerResponse('', 204 if success else 400)
 
 
 ACTION = pull_application
