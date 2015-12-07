@@ -93,5 +93,5 @@ class Registry(object):
         if res.status == 404:
             raise ValueError('Response not found')
 
-        img_compressed_layer = res.json
+        img_compressed_layer = res.read()
         return img_compressed_layer

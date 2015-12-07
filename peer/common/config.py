@@ -19,7 +19,7 @@ class Config(object):
 
     def __getattr__(self, key):
         if key in self._config:
-            return self.get(key)
+            return self._render_value(self._config[key])
 
     def get(self, *args, **kwargs):
         return self._render_value(self._config.get(*args, **kwargs))
@@ -31,16 +31,19 @@ class Config(object):
         return key in self._config
 
     def _render_value(self, v):
+        if not isinstance(v, basestring):
+            return v
+
         # prepare render keys
         prks = self.RENDER_REGEX.findall(v)
-        if not prepare_render_keys:
+        if not prks:
             return v
 
         # rendered value
         rv = v
         for prk in prks:
             k = self.RENDER_KEY_REGEX.findall(prk)[0]
-            rv = rv.replace(prk, self._rander_value(self.get(k)))
+            rv = rv.replace(prk, self._render_value(self._config[k]))
 
         return rv
 
