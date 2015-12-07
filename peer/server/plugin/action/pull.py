@@ -41,12 +41,12 @@ def _pull_repository(repo_info):
     if asked_tag:
         for tag in tags:
             if asked_tag == tag['name']:
-                _pull_application(r, tag['app_id'])
+                _pull_application(r, tag['application_id'])
                 success = True
                 break
     else:
         for tag in tags:
-            _pull_application(r, tag['app_id'])
+            _pull_application(r, tag['application_id'])
         success = True
 
     return success

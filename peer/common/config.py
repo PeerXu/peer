@@ -1,4 +1,10 @@
+import re
+
+
 class Config(object):
+    RENDER_REGEX = re.compile(r'{{\s?[^\s]+\s?}}')
+    RENDER_KEY_REGEX = re.compile(r'{{\s?([^\s]+)\s?}}')
+
     def __init__(self, config=None):
         if config is None:
             config = {}
@@ -13,16 +19,30 @@ class Config(object):
 
     def __getattr__(self, key):
         if key in self._config:
-            return self._config[key]
+            return self.get(key)
 
     def get(self, *args, **kwargs):
-        return self.config.get(*args, **kwargs)
+        return self._render_value(self._config.get(*args, **kwargs))
 
     def set(self, key, value):
         self._config[key] = value
 
     def __contains__(self, key):
         return key in self._config
+
+    def _render_value(self, v):
+        # prepare render keys
+        prks = self.RENDER_REGEX.findall(v)
+        if not prepare_render_keys:
+            return v
+
+        # rendered value
+        rv = v
+        for prk in prks:
+            k = self.RENDER_KEY_REGEX.findall(prk)[0]
+            rv = rv.replace(prk, self._rander_value(self.get(k)))
+
+        return rv
 
 
 _config = None

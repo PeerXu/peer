@@ -10,11 +10,11 @@ def load():
     cfg = config.load()
     conf = {
         'host': '0.0.0.0',
-        'peer_home': '/home/cloud/peer',
-        'container_home': '/home/cloud/peer/containers',
-        'container_image_home': '/home/cloud/peer/containers/images',
-        'application_home': '/home/cloud/peer/applications',
-        'application_image_home': '/home/cloud/peer/applications/images',
+        'peer_home': '/home/peer/peer',
+        'container_home': '{{ peer_home }}/containers',
+        'container_image_home': '{{ container_home }}/images',
+        'application_home': '{{ peer_home }}/applications',
+        'application_image_home': '{{ application_home }}/images',
         'volume_home': '/volumes',
         'volume_nfs_host': '10.12.31.1'
     }

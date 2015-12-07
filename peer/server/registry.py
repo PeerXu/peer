@@ -20,6 +20,7 @@ class Registry(object):
     def get_http_connection(self):
         cfg = config.load()
         host, port = self._registry.split(':') if ':' in self._registry else (self._registry, cfg.registry_port)
+        port = int(port)
 
         return get_http_connection(host, port)
 
@@ -32,7 +33,7 @@ class Registry(object):
         if res.status == 404:
             raise ValueError('Repository not found')
 
-        repo = res.json()
+        repo = res.json
         return repo
 
     def get_remote_tags(self, namespace, repository):
@@ -44,7 +45,7 @@ class Registry(object):
         if res.status == 404:
             raise ValueError('Repository not found')
 
-        tags = res.json()
+        tags = res.json
         return tags
 
     def get_remote_history(self, app_id):
@@ -56,7 +57,7 @@ class Registry(object):
         if res.status == 404:
             raise ValueError('Repository not found')
 
-        history = res.json()
+        history = res.json
         return history
 
     def get_remote_app_json(self, app_id):
@@ -68,7 +69,7 @@ class Registry(object):
         if res.status == 404:
             raise ValueError('Response not found')
 
-        img_json = res.json()
+        img_json = res.json
         return img_json
 
     def get_remote_app_checksum(self, app_id):
@@ -80,7 +81,7 @@ class Registry(object):
         if res.status == 404:
             raise ValueError('Response not found')
 
-        img_checksum = res.json()
+        img_checksum = res.json
         return img_checksum
 
     def get_remote_app_compressed_layer(self, app_id):
@@ -92,5 +93,5 @@ class Registry(object):
         if res.status == 404:
             raise ValueError('Response not found')
 
-        img_compressed_layer = res.json()
+        img_compressed_layer = res.json
         return img_compressed_layer
