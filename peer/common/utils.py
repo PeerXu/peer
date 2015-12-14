@@ -14,7 +14,7 @@ def parse_repository_name(name):
     name = name.strip('/')
     registry = '%s:%s' % (cfg.registry_host, cfg.registry_port)
     name, tag = name.rsplit(':', 1) if ':' in name else (name, None)
-    namespace, repository = name.lsplit('/', 1) if '/' in name else ('library', name)
+    namespace, repository = name.split('/', 1) if '/' in name else ('library', name)
 
     return (registry, namespace, repository, tag)
 
@@ -24,7 +24,6 @@ def get_http_connection(cfg):
 
 
 def _get_http_connection(host, port):
-
     class PeerClientResponse(httplib.HTTPResponse, object):
         @property
         def json(self):

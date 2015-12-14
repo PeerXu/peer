@@ -3,15 +3,26 @@ SCHEMA = {
     'applications': {
         'resoucre_methods': ['GET', 'POST'],
         'item_methods': ['GET', 'PATCH', 'PUT', 'DELETE'],
-        'item_url': 'regex("[0-9a-f]{40}")',
+        'item_url': REGEX_SHA1,
         'schema': {
             '_id': {
                 'type': 'sha256'
             },
-            'name': {
+            'registry': {
                 'type': 'string',
-                'required': True,
-                'unique': True
+                'default': ''
+            },
+            'namespace': {
+                'type': 'string',
+                'default': 'library'
+            },
+            'repository': {
+                'type': 'string',
+                'required': True
+            },
+            'tag': {
+                'type': 'string',
+                'default': ''
             },
             'program': {
                 'type': 'string',

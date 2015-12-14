@@ -3,6 +3,7 @@ import gzip
 import tempfile
 
 from peer.server.common import config
+from peer.server.main import get_app
 from peer.common.utils import json
 
 
@@ -12,7 +13,7 @@ class Graph(object):
     def __init__(self, root):
         self._root = root
         self._config = config.load()
-        self._applications = None
+        self._apps = None
 
         self._init()
 
@@ -23,15 +24,24 @@ class Graph(object):
         self._restore()
 
     def _restore(self):
-        _, self._applications, _ = os.walk(self._root).next()
+        _, self._apps, _ = os.walk(self._root).next()
 
-    def createApplication(self, application):
+    def _create_application(self, app):
         pass
 
-    def deleteApplication(self, application_id):
+    def create_application(self, app):
+        app = get_app()
+        cli = app.get_client()
+
+        res = cli.post('/v1/applications', body=app)
+        return res.status == 200
+
+    def delete_application(self, app_id):
         pass
 
-    def registrApplication(self, app_json, app_checksum, app_compressed_layer):
+    def registr_application(self, app_json, app_checksum, app_compressed_layer):
+        self.create_application(app_json)
+
         app_id = app_json['id']
 
         app_root = os.path.join(self._root, app_id)
