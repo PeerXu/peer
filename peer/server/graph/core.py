@@ -4,7 +4,6 @@ import tempfile
 
 from peer.server.common import config
 from peer.server.main import get_app
-from peer.common.utils import json
 
 
 class Graph(object):
@@ -30,8 +29,7 @@ class Graph(object):
         pass
 
     def create_application(self, app):
-        app = get_app()
-        cli = app.get_client()
+        cli = get_app().get_client()
 
         res = cli.post('/v1/applications', body=app)
         return res.status == 200
@@ -39,16 +37,13 @@ class Graph(object):
     def delete_application(self, app_id):
         pass
 
-    def registr_application(self, app_json, app_checksum, app_compressed_layer):
-        self.create_application(app_json)
+    def register_application(self, app_data, app_checksum, app_compressed_layer):
+        self.create_application(app_data)
 
-        app_id = app_json['id']
+        app_id = app_data['_id']
 
         app_root = os.path.join(self._root, app_id)
         os.makedirs(os.path.join(app_root, 0700))
-
-        with open(os.path.join(app_root, 'json'), 'w') as f:
-            f.write(json.dumps(app_json))
 
         # TODO(Peer): match checksum before decompress
         with gzip.open(app_compressed_layer, 'rb') as layer, tempfile.NamedTemporaryFile(delete=False) as tmp:

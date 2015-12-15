@@ -24,21 +24,36 @@ SCHEMA = {
                 'type': 'string',
                 'default': ''
             },
-            'program': {
-                'type': 'string',
-                'default': ''
-            },
-            'cmdline': {
-                'type': 'string',
-                'default': ''
-            },
-            'min_core': {
-                'type': 'integer',
-                'default': 1
-            },
-            'min_mem': {
-                'type': 'integer',
-                'default': 512
+            'config': {
+                'type': 'dict',
+                'schema': {
+                    'program': {
+                        'type': 'string',
+                        'default': ''
+                    },
+                    'cmdline': {
+                        'type': 'string',
+                        'default': ''
+                    },
+                    'min_core': {
+                        'type': 'integer',
+                        'default': 1
+                    },
+                    'min_mem': {
+                        'type': 'integer',
+                        'default': 512
+                    },
+                    'username': {
+                        'type': 'string',
+                        'default': None,
+                        'nullable': True
+                    },
+                    'password': {
+                        'type': 'string',
+                        'default': None,
+                        'nullable': True
+                    }
+                }
             },
             'from': {
                 'type': 'sha256',
@@ -49,6 +64,22 @@ SCHEMA = {
                 },
                 'nullable': True,
                 'default': None
+            },
+            'created': {
+                'type': 'datetime',
+                'default': None
+            },
+            'architecture': {
+                'type': 'string',
+                'default': 'amd64'
+            },
+            'os': {
+                'type': 'string',
+                'default': 'windows'
+            },
+            'os_version': {
+                'type': 'string',
+                'default': 'windows 7'
             }
         }
     }

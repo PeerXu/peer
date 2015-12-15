@@ -3,6 +3,10 @@ import hashlib
 
 
 def custom_resource_id(resource, request):
+    if 'id' in request.json:
+        request.json['_id'] = request.json['id']
+        return
+
     if '_id' not in request.json:
         sha256 = hashlib.sha256()
         sha256.update(os.urandom(256))

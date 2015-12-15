@@ -27,19 +27,6 @@ def parse_request():
     return r
 
 
-def _mix_repo_tag(repo, tag):
-    return {
-        '_id': tag['layer_id'],
-        'namespace': repo['namespace'],
-        'repository': repo['repository'],
-        'tag': tag['name'],
-        'program': repo['program'],
-        'cmdline': repo['cmdline'],
-        'min_core': repo['min_core'],
-        'min_mem': repo['min_mem'],
-    }
-
-
 def _pull_repository(repo):
     namespace = repo['namespace']
     repository = repo['repository']
@@ -69,9 +56,10 @@ def _pull_application(r, app_id):
 
     for app in apps:
         app_json = r.get_remote_app_json(app_id)
+        app_data = r.application_from_registry_application_json(app_json)
         app_checksum = r.get_remote_app_checksum(app_id)
         app_compressed_layer = r.get_remote_app_compressed_layer(app_id)
-        grp.register_application(app_json, app_checksum, app_compressed_layer)
+        grp.register_application(app_data, app_checksum, app_compressed_layer)
 
 
 def pull_application():

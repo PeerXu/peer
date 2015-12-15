@@ -69,8 +69,8 @@ class Registry(object):
         if res.status == 404:
             raise ValueError('Response not found')
 
-        img_json = res.json
-        return img_json
+        app_json = res.json
+        return app_json
 
     def get_remote_app_checksum(self, app_id):
         conn = self.get_http_connection()
@@ -81,8 +81,8 @@ class Registry(object):
         if res.status == 404:
             raise ValueError('Response not found')
 
-        img_checksum = res.json
-        return img_checksum
+        app_checksum = res.json
+        return app_checksum
 
     def get_remote_app_compressed_layer(self, app_id):
         conn = self.get_http_connection()
@@ -93,5 +93,15 @@ class Registry(object):
         if res.status == 404:
             raise ValueError('Response not found')
 
-        img_compressed_layer = res.read()
-        return img_compressed_layer
+        app_compressed_layer = res.read()
+        return app_compressed_layer
+
+    def application_to_registry_application_json(self, app):
+        app_json = dict(app)
+        app_json['layer_id'] = app_json.pop('_id')
+        return app_json
+
+    def application_from_registry_application_json(self, app_json):
+        app = dict(app_json)
+        app['_id'] = app.pop('layer_id')
+        return app
