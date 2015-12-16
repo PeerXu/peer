@@ -12,7 +12,8 @@ else:
         "eve==0.5.3",
         "pymongo==2.8.1",
         "libvirt-python>=1.2.2",
-        "pywinrm==0.0.3"
+        "pywinrm==0.0.3",
+        "python-dateutil==2.4.2"
     ]
 
 setup(

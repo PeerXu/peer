@@ -31,8 +31,8 @@ class Graph(object):
     def create_application(self, app):
         cli = get_app().get_client()
 
-        res = cli.post('/v1/applications', body=app)
-        return res.status == 200
+        res = cli.post('/v1/applications', data=app)
+        return res.status == 201
 
     def delete_application(self, app_id):
         pass
@@ -43,7 +43,8 @@ class Graph(object):
         app_id = app_data['_id']
 
         app_root = os.path.join(self._root, app_id)
-        os.makedirs(os.path.join(app_root, 0700))
+        if not os.path.exists(app_root):
+            os.makedirs(app_root, 0700)
 
         # TODO(Peer): match checksum before decompress
         with gzip.open(app_compressed_layer, 'rb') as layer, tempfile.NamedTemporaryFile(delete=False) as tmp:

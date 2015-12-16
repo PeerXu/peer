@@ -29,10 +29,12 @@ SCHEMA = {
                 'schema': {
                     'program': {
                         'type': 'string',
-                        'default': ''
+                        'nullable': True,
+                        'default': None
                     },
                     'cmdline': {
                         'type': 'string',
+                        'nullable': True,
                         'default': ''
                     },
                     'min_core': {
@@ -45,13 +47,14 @@ SCHEMA = {
                     },
                     'username': {
                         'type': 'string',
-                        'default': None,
-                        'nullable': True
+                        'nullable': True,
+                        'default': None
                     },
                     'password': {
                         'type': 'string',
-                        'default': None,
-                        'nullable': True
+                        'nullable': True,
+                        'default': None
+
                     }
                 }
             },
@@ -67,6 +70,7 @@ SCHEMA = {
             },
             'created': {
                 'type': 'datetime',
+                'nullable': True,
                 'default': None
             },
             'architecture': {
