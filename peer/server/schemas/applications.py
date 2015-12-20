@@ -8,6 +8,9 @@ SCHEMA = {
             '_id': {
                 'type': 'sha256'
             },
+            'layer_id': {
+                'type': 'sha256'
+            },
             'registry': {
                 'type': 'string',
                 'default': ''

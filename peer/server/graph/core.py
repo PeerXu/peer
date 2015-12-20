@@ -54,7 +54,7 @@ class Graph(object):
             while len(buf):
                 tmp_img.write(decompress_obj.decompress(buf))
                 buf = app_compressed_layer_response.read(self.BUFSIZ)
-            os.rename(tmp_img.name, os.path.join(self._root, app_id, 'img'))
+            os.rename(tmp_img.name, os.path.join(app_root, 'img'))
         finally:
             if os.path.exists(tmp_img.name):
                 os.unlink(tmp_img.name)

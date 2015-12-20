@@ -99,12 +99,10 @@ class Registry(object):
 
     def application_to_registry_application_json(self, app):
         app_json = dict(app)
-        app_json['layer_id'] = app_json.pop('_id')
         app_json['created'] = app_json['created'].isoformat() + 'Z'
         return app_json
 
     def application_from_registry_application_json(self, app_json):
         app = dict(app_json)
-        app['_id'] = app.pop('layer_id')
         app['created'] = iso8601_to_datetime(app['created'])
         return app
