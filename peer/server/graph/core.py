@@ -1,5 +1,5 @@
 import os
-import gzip
+import zlib
 import tempfile
 
 from peer.server.common import config
@@ -37,7 +37,7 @@ class Graph(object):
     def delete_application(self, app_id):
         pass
 
-    def register_application(self, app_data, app_checksum, app_compressed_layer):
+    def register_application(self, app_data, app_checksum, app_compressed_layer_response):
         self.create_application(app_data)
 
         app_id = app_data['_id']
@@ -47,13 +47,14 @@ class Graph(object):
             os.makedirs(app_root, 0700)
 
         # TODO(Peer): match checksum before decompress
-        with gzip.open(app_compressed_layer, 'rb') as layer, tempfile.NamedTemporaryFile(delete=False) as tmp:
-            tmp_path = tmp.name
-            while True:
-                chunk = layer.read(self.BUFSIZ)
-                if chunk:
-                    tmp.write(chunk)
-                else:
-                    break
-
-        os.rename(tmp_path, os.path.join(self._root, app_id, 'img'))
+        tmp_img = tempfile.NamedTemporaryFile(delete=False)
+        try:
+            decompress_obj = zlib.decompressobj(16 + zlib.MAX_WBITS)
+            buf = app_compressed_layer_response.read(self.BUFSIZ)
+            while len(buf):
+                tmp_img.write(decompress_obj.decompress(buf))
+                buf = app_compressed_layer_response.read(self.BUFSIZ)
+            os.rename(tmp_img.name, os.path.join(self._root, app_id, 'img'))
+        finally:
+            if os.path.exists(tmp_img.name):
+                os.unlink(tmp_img.name)

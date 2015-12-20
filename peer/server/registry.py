@@ -86,7 +86,7 @@ class Registry(object):
         app_checksum = res.json
         return app_checksum
 
-    def get_remote_app_compressed_layer(self, app_id):
+    def get_remote_app_compressed_layer_response(self, app_id):
         conn = self.get_http_connection()
         conn.request('GET', '/v1/applications/{0}/layer'.format(app_id))
 
@@ -95,8 +95,7 @@ class Registry(object):
         if res.status == 404:
             raise ValueError('Response not found')
 
-        app_compressed_layer = res.read()
-        return app_compressed_layer
+        return res
 
     def application_to_registry_application_json(self, app):
         app_json = dict(app)
