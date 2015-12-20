@@ -58,7 +58,7 @@ def _pull_application(r, app_id):
         app_json = r.get_remote_app_json(app_id)
         app_data = r.application_from_registry_application_json(app_json)
         app_checksum = r.get_remote_app_checksum(app_id)
-        app_compressed_layer_response = r.get_remote_app_compressed_layer(app_id)
+        app_compressed_layer_response = r.get_remote_app_compressed_layer_response(app_id)
         grp.register_application(app_data, app_checksum, app_compressed_layer_response)
 
 

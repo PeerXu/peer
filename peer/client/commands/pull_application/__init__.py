@@ -60,7 +60,7 @@ def pull_application(argv):
     tag = tag or '(null)'
 
     # TODO(Peer): need progress bar
-    if res.status == 200:
+    if res.status == 204:
         sys.stdout.write('''Pull Repository %s/%s:%s from %s
 ''' % (namespace, repository, tag, registry))
     else:
