@@ -311,22 +311,6 @@ Arguments:
     sys.exit(1)
 
 
-def ps_applications(argv):
-    conn = get_http_connection()
-    conn.request('GET', '/v1/applications')
-    res = conn.getresponse()
-
-    applications = res.json['_items']
-    print 'Applications:'
-    print '%-24s | %-16s | %-20s | %-16s' % ('ID', 'Name', 'Program', 'Cmdline')
-    print '-' * 78
-    for application in applications:
-        print '%-24s | %-16s | %-20s | %-16s' % (application['_id'],
-                                                 application['name'],
-                                                 application['program'],
-                                                 application['cmdline'])
-
-
 def parse_args(opts, args):
     cfg = config.load()
 
@@ -353,7 +337,6 @@ def main(argv):
     action = args[0]
 
     COMMANDS = {
-        'applications': ps_applications,
         'commit': commit_container,
         'start': start_container,
         'stop': stop_container,
