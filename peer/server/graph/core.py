@@ -25,14 +25,22 @@ class Graph(object):
     def _restore(self):
         _, self._apps, _ = os.walk(self._root).next()
 
-    def _create_application(self, app):
-        pass
-
     def create_application(self, app):
         cli = get_app().get_client()
 
-        res = cli.post('/v1/applications', data=app)
-        return res.status == 201
+        res = cli.get('/v1/applications/{}'.format(app['_id']))
+        if res.status_code == 404:
+            res = cli.post('/v1/applications', data=app)
+            return res.status_code == 201
+        elif res.status_code == 200:
+            etag = res.json['_etag']
+            tags = list(set(app['tags'] + res.json['tags']))
+            res = cli.put('/v1/applications/{}'.format(app['_id']),
+                          headers={'If-Match': etag},
+                          data={'tags': tags})
+            return res.status_code == 200
+        else:
+            return False
 
     def delete_application(self, app_id):
         pass

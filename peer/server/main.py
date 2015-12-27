@@ -20,7 +20,7 @@ def make_app():
         # 'HATEOAS': False,
 
         'RESOURCE_METHODS': ['GET', 'POST'],
-        'ITEM_METHODS': ['GET', 'PATCH', 'PUT', 'DELETE'],
+        'ITEM_METHODS': ['GET', 'PATCH', 'DELETE'],
 
         'DOMAIN': load_schemas()
     }

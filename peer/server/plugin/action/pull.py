@@ -32,33 +32,41 @@ def _pull_repository(repo):
     repository = repo['repository']
     asked_tag = repo['tag']
     r = registry.new_registry(repo['registry'])
-    # repo_data = r.get_repository_data(namespace, repository)
+    repo_data = r.get_repository_data(namespace, repository)
     tags = r.get_remote_tags(namespace, repository)
 
     success = False
     if asked_tag:
         for tag in tags:
             if asked_tag == tag['name']:
-                _pull_application(r, tag['application_id'])
+                repo_data['tags'] = [tag]
+                _pull_applications(r, repo_data)
                 success = True
                 break
     else:
-        for tag in tags:
-            _pull_application(r, tag['application_id'])
+        repo_data['tags'] = tags
+        _pull_applications(r, repo_data)
         success = True
 
     return success
 
 
-def _pull_application(r, app_id):
+def _pull_applications(r, repo_data):
+    for tag in repo_data['tags']:
+        _pull_application(r, tag['application_id'], tag['name'])
+
+
+def _pull_application(r, app_id, tag_name):
     grp = graph.load()
     apps = r.get_remote_history(app_id)
 
     for app in apps:
-        app_json = r.get_remote_app_json(app_id)
+        app_json = r.get_remote_app_json(app)
+        if app == app_id:
+            app_json['tags'] = [tag_name]
         app_data = r.application_from_registry_application_json(app_json)
-        app_checksum = r.get_remote_app_checksum(app_id)
-        app_compressed_layer_response = r.get_remote_app_compressed_layer_response(app_id)
+        app_checksum = r.get_remote_app_checksum(app)
+        app_compressed_layer_response = r.get_remote_app_compressed_layer_response(app)
         grp.register_application(app_data, app_checksum, app_compressed_layer_response)
 
 

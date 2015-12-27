@@ -2,9 +2,10 @@ from peer.server.utils import REGEX_SHA1
 
 SCHEMA = {
     'containers': {
-        'resoucre_methods': ['GET', 'POST'],
-        'item_methods': ['GET', 'PATCH', 'PUT', 'DELETE'],
-        'item_url': REGEX_SHA1,
+        'additional_lookup': {
+            'url': REGEX_SHA1,
+            'field': '_id'
+        },
         'schema': {
             '_id': {
                 'type': 'sha256'

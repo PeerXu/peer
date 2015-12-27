@@ -1,14 +1,12 @@
 from peer.server.utils import REGEX_SHA1
 SCHEMA = {
     'applications': {
-        'resoucre_methods': ['GET', 'POST'],
-        'item_methods': ['GET', 'PATCH', 'PUT', 'DELETE'],
-        'item_url': REGEX_SHA1,
+        'additional_lookup': {
+            'url': REGEX_SHA1,
+            'field': '_id'
+        },
         'schema': {
             '_id': {
-                'type': 'sha256'
-            },
-            'layer_id': {
                 'type': 'sha256'
             },
             'registry': {
@@ -23,9 +21,12 @@ SCHEMA = {
                 'type': 'string',
                 'required': True
             },
-            'tag': {
-                'type': 'string',
-                'default': ''
+            'tags': {
+                'type': 'list',
+                'schema': {
+                    'type': 'string'
+                },
+                'default': []
             },
             'config': {
                 'type': 'dict',

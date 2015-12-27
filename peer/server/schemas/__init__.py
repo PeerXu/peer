@@ -1,8 +1,10 @@
 from peer.server.schemas import containers
 from peer.server.schemas import applications
 from peer.server.schemas import volumes
+from peer.server.schemas import user
 
-__MODULES__ = [containers, applications, volumes]
+__MODULES__ = [containers, applications, volumes, user]
+
 
 def load_schemas():
     schemas = {}
